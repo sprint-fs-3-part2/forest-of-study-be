@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 스터디 모델
+model Study {
+  id        String  @id @default(uuid())
+  name      String // 스터디의 이름
+  nickname  String // 스터디 개설자의 닉네임
+  intro     String // 스터디 소개
+  background String // 배경 이미지 설정
+  password  String // 스터디 비밀번호
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  habits    Habit[]   // 스터디에 연관된 오늘의 습관들
+  focuses     Focus[]      // 스터디에 연관된 오늘의 집중들
+  completedHabits CompletedHabit[] // 스터디에 연관된 완료된 습관들
+  reactions       Reaction[]       // 스터디에 연관된 리액션들
+}
+
+// 습관 모델
+model Habit {
+  id        String  @id @default(uuid())
+  studyId   String
+  name      String // 습관의 이름(물 마시기, 책 읽기 등)
+  completed Boolean   @default(false) // 습관 완료 여부
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  study     Study     @relation(fields: [studyId], references: [id]) // 습관이 속한 스터디
+  completedHabits CompletedHabit[] // 습관에 연관된 완료된 습관들
+}
+
+// 완료된 습관 모델
+model CompletedHabit {
+  id        String  @id @default(uuid())
+  studyId   String
+  habitId   String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  study     Study     @relation(fields: [studyId], references: [id])
+  habit     Habit     @relation(fields: [habitId], references: [id])
+}
+
+// 오늘의 집중 모델
+model Focus {
+  id        String  @id @default(uuid())
+  studyId   String
+  points    Int       @default(0)
+  startTime DateTime?
+  endTime   DateTime?
+  study     Study     @relation(fields: [studyId], references: [id])
+}
+
+// 좋아요(리액션) 모델
+model Reaction {
+  id        String  @id @default(uuid())
+  studyId   String
+  emoji     String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  study     Study     @relation(fields: [studyId], references: [id])
+}
