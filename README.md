@@ -51,6 +51,13 @@ $ git add . && git commit -m 'initial commit'
 ㅤ
 ```
 
+- 초기 설정 Remote Repository에 push
+
+```bash
+$ git push origin main
+ㅤ
+```
+
 ## 패키지 설치 방법
 
 ### 노드 버전 설치
