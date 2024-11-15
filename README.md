@@ -189,19 +189,6 @@ $ npm run start:dev
 
 </details>
 
-## 테스팅
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
 ## 배포
 
 ## Resources
