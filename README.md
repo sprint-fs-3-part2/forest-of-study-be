@@ -189,12 +189,9 @@ $ npm run start:dev
 
 </details>
 
-## 배포
+<br/>
 
-## Resources
-
-## Contributors
-
-## License
-
-Forest-of-study is [MIT licensed](https://github.com/sprint-fs-3-part2/forest-of-study-be).
+> <br />
+> 필요에 따라 추가하고 싶은 공동 작업용 확장팩이 있다면 알려주세요. 😊
+> <br />
+> <br />
