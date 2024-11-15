@@ -12,6 +12,38 @@
 
 ## 프로젝트 설정
 
+## 권장 VS Code 확장팩
+
+프로젝트 개발에 도움이 되는 VS Code 확장팩들입니다:
+
+### 코드 품질
+
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
+  - TypeScript/JavaScript 코드 품질과 스타일 검사
+- [Pretty TypeScript Errors](https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors)
+  - TypeScript 에러 메시지를 더 읽기 쉽게 표시
+
+### 개발 생산성
+
+- [Prisma](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma)
+  - Prisma 스키마 파일 지원
+- [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
+  - 일관된 코딩 스타일 유지
+- [Code Spell Checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker)
+  - 코드 내 영문 스펠링 체크
+
+### TODO 관리
+
+- [TODO Tree](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree)
+  - TODO/FIXME 등 주석 하이라이트 및 트리뷰
+- [TODO Highlight](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
+  - TODO/FIXME 등 주석 하이라이트
+
+### Git
+
+- [Gitmoji](https://marketplace.visualstudio.com/items?itemName=seatonjiang.gitmoji-vscode)
+  - 커밋 메시지에 이모지 추가 지원
+
 ### 프로젝트 초기화
 
 - npm i -g @nestjs/cli 를 통해 nest cli 설치
