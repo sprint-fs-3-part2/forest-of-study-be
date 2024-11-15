@@ -166,7 +166,7 @@ $ npm run start:prod
 
 ```bash
 $ npm run start:dev
-# 실행 후 http://localhost:3000/api 접속
+# 실행 후 http://localhost:8000/api 접속
 ```
 
 ## 권장 VS Code 확장팩
