@@ -6,8 +6,6 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
-		"prestart": "npx prisma generate",
-		"prestart:dev": "npx prisma generate",
 		"build": "nest build",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
 		"start": "nest start",
