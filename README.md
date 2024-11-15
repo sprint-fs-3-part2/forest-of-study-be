@@ -66,9 +66,7 @@ $ git push origin main
 
 - Windows 11 : Windows 설정(단축키 : Win+i) - 앱 - 앱 및 기능 - 설치된 node 버전 제거
 - Windows 10 이하 : Windows 검색(단축키 : Win+s) - 제어판 검색 - 프로그램 제거 - 설치된 node 버전 제거
-
 - nvm(node version manager) 설치하기 : [nvm-setup.exe](https://github.com/coreybutler/nvm-windows/releases/download/1.1.12/nvm-setup.zip) 내려받아 nvm 설치(꽌리자 권한으로 설치)
-
 - git bash에서 nvm 사용가능 여부 확인
 
 ```bash
@@ -159,6 +157,13 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+## API 문서 확인 방법
+
+```bash
+$ npm run start:dev
+# 실행 후 http://localhost:3000/api 접속
 ```
 
 ## 테스팅
