@@ -4,30 +4,35 @@ import { ApiProperty } from '@nestjs/swagger';
 // CreateStudyDto는 한 개의 스터디 생성 시 클라이언트로부터 받을(요청) 데이터 형식을 정의한 객체
 export class CreateStudyDto {
   @ApiProperty({
+    nullable: false,
     description: '스터디 이름',
     example: 'UX 스터디',
     type: String,
   })
   name: string;
   @ApiProperty({
+    nullable: false,
     description: '스터디 개설자의 닉네임',
     example: 'K.K.',
     type: String,
   })
   nickname: string;
   @ApiProperty({
+    nullable: false,
     description: '스터디 소개',
     example: '나비보벳따우',
     type: String,
   })
   intro: string;
   @ApiProperty({
+    nullable: false,
     description: '스터디 배경 이미지',
     example: 'green',
     type: String,
   })
   background: string;
   @ApiProperty({
+    nullable: false,
     description: '스터디 비밀번호',
     example: '1q2w3e4r',
     type: String,
