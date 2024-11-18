@@ -3,10 +3,12 @@ import { CreateStudyDto, CreateStudyResponseDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { QueryParamsDto } from './dto/retreive-study.dto';
-import { query } from 'express';
 
 @Injectable()
 export class StudiesService {
+  remove(id: string) {
+    throw new Error('Method not implemented.');
+  }
   // 최근 조회한 스터디 UUID 배열을 저장(private로 선언하여 외부에서 접근 불가능하도록 함)
   private recentStudies: string[] = [];
   // PrismaService를 주입
@@ -45,7 +47,7 @@ export class StudiesService {
   }
 
   // @Query('page'): number = 1, @Query('take'): number = 6
-  async findStudies(@Query() queryParamsDto: QueryParamsDto) {
+  async getStudies(@Query() queryParamsDto: QueryParamsDto) {
     // 모든 스터디 목록을 조회
     // 조회 시 Query String을 활용하여 오프셋 기반 페이지네이션을 구현해야 함
     // page, take, orderBy, order를 Query String으로 받아와서 사용
@@ -55,27 +57,36 @@ export class StudiesService {
       orderBy = 'createdAt',
       order = 'desc',
     } = queryParamsDto;
-    console.log(queryParamsDto);
     return this.prisma.study.findMany({
-      skip: (page - 1) * take,
-      take,
-      orderBy: { [orderBy]: order },
+      skip: Number((page - 1) * take) || 0,
+      take: Number(take) || 6,
+      orderBy: { [orderBy || 'createdAt']: order || 'desc' },
     });
   }
 
-  findAll() {
-    return `This action returns all studies`;
+  async getStudyById(id: string) {
+    // return `This action returns a #${id} study`;
+    return this.prisma.study.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} study`;
+  async updateStudy(id: string, updateStudyDto: UpdateStudyDto) {
+    return this.prisma.study.update({
+      where: {
+        id,
+      },
+      data: updateStudyDto,
+    });
   }
 
-  update(id: number, updateStudyDto: UpdateStudyDto) {
-    return `This action updates a #${id} study`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} study`;
+  async deleteStudy(id: string) {
+    return this.prisma.study.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
