@@ -1,4 +1,8 @@
 /// 습관 모델
+/// - 스터디 내에서 사용자가 설정한 습관을 관리
+/// - Study 모델과 1:N 관계
+/// - CompletedHabit 모델과 1:N 관계
+/// - 주요 필드: name(습관 이름), completed(완료 여부)
 model Habit {
   id        String  @id @default(uuid())
   studyId   String
