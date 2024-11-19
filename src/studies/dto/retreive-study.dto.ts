@@ -7,6 +7,7 @@ import {
   IsString,
   Matches,
   MaxLength,
+  MinLength,
 } from 'class-validator';
 
 export enum OrderBy {
@@ -76,12 +77,15 @@ export class SearchKeywordDto extends PickType(QueryParamsDto, [
   'order',
 ]) {
   @ApiPropertyOptional({
-    description: '검색할 키워드',
+    description: '스터디 검색 키워드 (최대 50자, 한글/영문/숫자/공백만 허용)',
     example: '개발',
     type: String,
+    minLength: 1,
+    maxLength: 50,
   })
   @IsString()
   @IsOptional()
+  @MinLength(1)
   @MaxLength(50)
   @Matches(/^[가-힣a-zA-Z0-9\s]*$/, {
     message: '특수문자는 사용할 수 없습니다',
