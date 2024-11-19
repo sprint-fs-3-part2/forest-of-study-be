@@ -10,6 +10,6 @@ model Habit {
   completed Boolean   @default(false) /// 습관 완료 여부
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  study     Study     @relation(fields: [studyId], references: [id]) /// 습관이 속한 스터디
+  study     Study     @relation(fields: [studyId], references: [id], onDelete: Cascade) /// 습관이 속한 스터디
   completedHabits CompletedHabit[] /// 습관에 연관된 완료된 습관들
 }
