@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
+import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 // POST /studies
 // CreateStudyDto는 한 개의 스터디 생성 시 클라이언트로부터 받을(요청) 데이터 형식을 정의한 객체
@@ -36,6 +38,16 @@ export class CreateStudyDto {
     description: '스터디 비밀번호',
     example: '1q2w3e4r',
     type: String,
+    minLength: 8,
+    maxLength: 64,
+  })
+  @Exclude({ toPlainOnly: true })
+  @IsString()
+  @MinLength(8)
+  @MaxLength(64)
+  @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])/, {
+    message:
+      '비밀번호는 대문자, 소문자, 숫자, 특수문자(!@#$%^&*)를 최소 1개 이상 포함해야 합니다',
   })
   password: string;
 }
