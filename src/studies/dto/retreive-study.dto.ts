@@ -2,11 +2,14 @@ import { ApiPropertyOptional, OmitType, PickType } from '@nestjs/swagger';
 import { CreateStudyDto } from './create-study.dto';
 import {
   IsEnum,
+  IsInt,
   IsNumber,
   IsOptional,
   IsString,
   Matches,
+  Max,
   MaxLength,
+  Min,
   MinLength,
 } from 'class-validator';
 
@@ -27,6 +30,8 @@ export class QueryParamsDto {
     example: 1,
     type: Number,
   })
+  @IsInt()
+  @Min(1)
   @IsNumber()
   @IsOptional()
   page?: number;
@@ -36,15 +41,20 @@ export class QueryParamsDto {
     example: 0,
     type: Number,
   })
+  @IsInt()
+  @Min(0)
   @IsNumber()
   @IsOptional()
   skip?: number;
   @ApiPropertyOptional({
     description:
-      '스터디 목록 조회 시 Offset 기반 페이지네이션 가져올 데이터 수 (take=6)',
+      '스터디 목록 조회 시 Offset 기반 페이지네이션 가져올 데이터 수 (take=6), 한 번에 최대 60개',
     example: 6,
     type: Number,
   })
+  @IsInt()
+  @Min(1)
+  @Max(60)
   @IsNumber()
   @IsOptional()
   take?: number;

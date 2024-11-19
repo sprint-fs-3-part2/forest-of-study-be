@@ -45,15 +45,9 @@ export class CreateStudyDto {
   @IsString()
   @MinLength(8)
   @MaxLength(64)
-  @Matches(/^(?=.*[A-Z])/, {
-    message: '대문자를 최소 1개 이상 포함해야 합니다',
-  })
-  @Matches(/^(?=.*[a-z])/, {
-    message: '소문자를 최소 1개 이상 포함해야 합니다',
-  })
-  @Matches(/^(?=.*[0-9])/, { message: '숫자를 최소 1개 이상 포함해야 합니다' })
-  @Matches(/^(?=.*[!@#$%^&*])/, {
-    message: '특수문자(!@#$%^&*)를 최소 1개 이상 포함해야 합니다',
+  @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])/, {
+    message:
+      '비밀번호는 대문자, 소문자, 숫자, 특수문자(!@#$%^&*)를 최소 1개 이상 포함해야 합니다',
   })
   password: string;
 }
