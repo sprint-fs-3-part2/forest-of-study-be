@@ -1,0 +1,10 @@
+/// 오늘의 집중 모델
+model Focus {
+  id        String  @id @default(uuid())
+  studyId   String
+  points    Int       @default(0)
+  startTime DateTime?
+  endTime   DateTime?
+  study     Study     @relation(fields: [studyId], references: [id])
+  @@index([studyId])
+}

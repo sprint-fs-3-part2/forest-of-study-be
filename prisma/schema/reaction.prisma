@@ -1,0 +1,10 @@
+/// 좋아요(리액션) 모델
+model Reaction {
+  id        String  @id @default(uuid())
+  studyId   String
+  emoji     String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  study     Study     @relation(fields: [studyId], references: [id])
+  @@index ([studyId])
+}

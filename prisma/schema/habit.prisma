@@ -1,0 +1,11 @@
+/// 습관 모델
+model Habit {
+  id        String  @id @default(uuid())
+  studyId   String
+  name      String /// 습관의 이름(물 마시기, 책 읽기 등)
+  completed Boolean   @default(false) /// 습관 완료 여부
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  study     Study     @relation(fields: [studyId], references: [id]) /// 습관이 속한 스터디
+  completedHabits CompletedHabit[] /// 습관에 연관된 완료된 습관들
+}
