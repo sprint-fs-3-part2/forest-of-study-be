@@ -7,6 +7,7 @@ export const ApiCustomDocs = (params: {
     title?: string;
     contents?: string[];
   };
+  required?: boolean;
   requestType?: any;
   responseType?: any;
 }): MethodDecorator => {
@@ -22,12 +23,22 @@ export const ApiCustomDocs = (params: {
 
   const apiBody = ApiBody({
     type: params.requestType,
-  });
+    required: params.required,
+  })
+    ? ApiBody
+    : null;
 
   const response200 = ApiResponse({
     status: 200,
     type: params.responseType,
   });
 
-  return applyDecorators(apiOperation, response200, apiBody);
+  // return applyDecorators(apiOperation, response200, apiBody);
+  return applyDecorators(
+    ...[
+      apiOperation,
+      response200,
+      apiBody, // apiBody가 존재할 때만 배열에 포함
+    ].filter(Boolean), // null, undefined 값 제거
+  );
 };
