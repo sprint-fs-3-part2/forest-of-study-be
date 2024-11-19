@@ -13,7 +13,11 @@ import { CreateStudyDto, CreateStudyResponseDto } from './dto/create-study.dto';
 import { UpdateStudyDto, UpdateStudyResponseDto } from './dto/update-study.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiCustomDocs } from '../shared/swagger/ApiCustomDocs';
-import { QueryParamsDto } from './dto/retreive-study.dto';
+import {
+  QueryParamsDto,
+  SearchKeywordDto,
+  SearchKeywordResponseDto,
+} from './dto/retreive-study.dto';
 
 @ApiTags('studies')
 @Controller('studies')
@@ -59,6 +63,21 @@ export class StudiesController {
   @Get()
   getStudies(@Query() queryParamsDto?: QueryParamsDto) {
     return this.studiesService.getStudies(queryParamsDto);
+  }
+
+  @ApiCustomDocs({
+    summary: '스터디 검색',
+    description: {
+      title: '스터디를 검색합니다.',
+      contents: ['특정 키워드로 스터디를 검색합니다.'],
+    },
+    required: false,
+    requestType: SearchKeywordDto,
+    responseType: SearchKeywordResponseDto,
+  })
+  @Get('search')
+  searchStudies(@Query() searchKeywordDto?: SearchKeywordDto) {
+    return this.studiesService.searchStudies(searchKeywordDto);
   }
 
   @ApiCustomDocs({

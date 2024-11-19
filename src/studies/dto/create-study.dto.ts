@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 // POST /studies
 // CreateStudyDto는 한 개의 스터디 생성 시 클라이언트로부터 받을(요청) 데이터 형식을 정의한 객체
@@ -37,6 +38,7 @@ export class CreateStudyDto {
     example: '1q2w3e4r',
     type: String,
   })
+  @Exclude({ toPlainOnly: true })
   password: string;
 }
 

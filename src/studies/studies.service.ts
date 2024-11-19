@@ -2,13 +2,10 @@ import { Injectable, Query } from '@nestjs/common';
 import { CreateStudyDto, CreateStudyResponseDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { QueryParamsDto } from './dto/retreive-study.dto';
+import { QueryParamsDto, SearchKeywordDto } from './dto/retreive-study.dto';
 
 @Injectable()
 export class StudiesService {
-  remove(id: string) {
-    throw new Error('Method not implemented.');
-  }
   // 최근 조회한 스터디 UUID 배열을 저장(private로 선언하여 외부에서 접근 불가능하도록 함)
   private recentStudies: string[] = [];
   // PrismaService를 주입
@@ -46,7 +43,6 @@ export class StudiesService {
     // return study.id;
   }
 
-  // @Query('page'): number = 1, @Query('take'): number = 6
   async getStudies(@Query() queryParamsDto: QueryParamsDto) {
     // 모든 스터디 목록을 조회
     // 조회 시 Query String을 활용하여 오프셋 기반 페이지네이션을 구현해야 함
@@ -61,6 +57,38 @@ export class StudiesService {
       skip: Number((page - 1) * take) || 0,
       take: Number(take) || 6,
       orderBy: { [orderBy || 'createdAt']: order || 'desc' },
+    });
+  }
+
+  async searchStudies(@Query() searchKeywordDto: SearchKeywordDto) {
+    // 스터디 목록 조회 시, 검색어를 이용하여 스터디 목록을 조회
+    // 검색 대상은 name, nickname, intro 필드
+    const { keyword } = searchKeywordDto;
+    return this.prisma.study.findMany({
+      omit: {
+        password: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      where: {
+        OR: [
+          {
+            name: {
+              contains: keyword,
+            },
+          },
+          {
+            nickname: {
+              contains: keyword,
+            },
+          },
+          {
+            intro: {
+              contains: keyword,
+            },
+          },
+        ],
+      },
     });
   }
 

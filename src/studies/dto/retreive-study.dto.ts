@@ -1,4 +1,6 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
+import { CreateStudyDto } from './create-study.dto';
+import { Exclude } from 'class-transformer';
 
 export enum OrderBy {
   createdAt = 'createdAt',
@@ -48,3 +50,18 @@ export class QueryParamsDto {
   })
   order?: SortOrder;
 }
+
+export class SearchKeywordDto {
+  @ApiPropertyOptional({
+    description: '검색할 키워드',
+    example: '개발',
+    type: String,
+  })
+  keyword?: string;
+}
+
+// SearchKeywordResponseDto는 스터디 검색 시 클라이언트에게 전달할(응답) 데이터 형식을 정의한 객체
+// password 필드를 제외한 CreateStudyDto를 상속받아 사용
+export class SearchKeywordResponseDto extends OmitType(CreateStudyDto, [
+  'password',
+] as const) {}
