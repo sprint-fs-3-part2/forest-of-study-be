@@ -1,11 +1,15 @@
-
 /// 완료된 습관 모델
+/// @description 스터디 참여자가 완료한 습관을 기록하는 모델입니다.
+/// @example 특정 스터디의 참여자가 습관을 완료할 때마다 새로운 레코드가 생성됩니다.
+/// @relationship Study - 해당 습관이 속한 스터디
+/// @relationship Habit - 완료된 습관
 model CompletedHabit {
   id        String  @id @default(uuid())
   studyId   String
   habitId   String
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  study     Study     @relation(fields: [studyId], references: [id])
-  habit     Habit     @relation(fields: [habitId], references: [id])
+  study     Study     @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  habit     Habit     @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  @@index([studyId, habitId])
 }

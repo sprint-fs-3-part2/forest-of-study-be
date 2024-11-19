@@ -1,11 +1,11 @@
 /// 스터디 모델
 model Study {
   id        String  @id @default(uuid())
-  name      String /// 스터디의 이름
-  nickname  String /// 스터디 개설자의 닉네임
-  intro     String /// 스터디 소개
+  name      String @db.VarChar(100) /// 스터디의 이름
+  nickname  String @db.VarChar(100) /// 스터디 개설자의 닉네임
+  intro     String  @db.Text /// 스터디 소개
   background String /// 배경 이미지 설정
-  password  String /// 스터디 비밀번호
+  password  String  @db.VarChar(255) /// 해시된 스터디 비밀번호
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
   habits    Habit[]   /// 스터디에 연관된 오늘의 습관들
