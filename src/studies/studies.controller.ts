@@ -11,7 +11,7 @@ import {
 import { StudiesService } from './studies.service';
 import { CreateStudyDto, CreateStudyResponseDto } from './dto/create-study.dto';
 import { UpdateStudyDto, UpdateStudyResponseDto } from './dto/update-study.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { ApiCustomDocs } from '../shared/swagger/ApiCustomDocs';
 import { QueryParamsDto } from './dto/retreive-study.dto';
 
