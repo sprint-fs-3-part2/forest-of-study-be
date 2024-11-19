@@ -63,28 +63,40 @@ export class StudiesService {
   async searchStudies(@Query() searchKeywordDto: SearchKeywordDto) {
     // 스터디 목록 조회 시, 검색어를 이용하여 스터디 목록을 조회
     // 검색 대상은 name, nickname, intro 필드
-    const { keyword } = searchKeywordDto;
+    const {
+      keyword,
+      page = 1,
+      take = 6,
+      orderBy = 'createdAt',
+      order = 'desc',
+    } = searchKeywordDto;
     return this.prisma.study.findMany({
       omit: {
         password: true,
         createdAt: true,
         updatedAt: true,
       },
+      skip: Number((page - 1) * take) || 0,
+      take: Number(take) || 6,
+      orderBy: { [orderBy || 'createdAt']: order || 'desc' },
       where: {
         OR: [
           {
             name: {
               contains: keyword,
+              mode: 'insensitive',
             },
           },
           {
             nickname: {
               contains: keyword,
+              mode: 'insensitive',
             },
           },
           {
             intro: {
               contains: keyword,
+              mode: 'insensitive',
             },
           },
         ],

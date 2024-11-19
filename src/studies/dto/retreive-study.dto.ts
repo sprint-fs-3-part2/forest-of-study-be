@@ -1,6 +1,13 @@
-import { ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional, OmitType, PickType } from '@nestjs/swagger';
 import { CreateStudyDto } from './create-study.dto';
-import { Exclude } from 'class-transformer';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 
 export enum OrderBy {
   createdAt = 'createdAt',
@@ -19,6 +26,8 @@ export class QueryParamsDto {
     example: 1,
     type: Number,
   })
+  @IsNumber()
+  @IsOptional()
   page?: number;
   @ApiPropertyOptional({
     description:
@@ -26,6 +35,8 @@ export class QueryParamsDto {
     example: 0,
     type: Number,
   })
+  @IsNumber()
+  @IsOptional()
   skip?: number;
   @ApiPropertyOptional({
     description:
@@ -33,6 +44,8 @@ export class QueryParamsDto {
     example: 6,
     type: Number,
   })
+  @IsNumber()
+  @IsOptional()
   take?: number;
   @ApiPropertyOptional({
     description: '스터디 목록 조회 시 정렬 기준 (orderBy=createdAt)',
@@ -40,6 +53,8 @@ export class QueryParamsDto {
     type: String,
     enum: OrderBy,
   })
+  @IsEnum(OrderBy)
+  @IsOptional()
   orderBy?: OrderBy;
 
   @ApiPropertyOptional({
@@ -48,14 +63,28 @@ export class QueryParamsDto {
     type: String,
     enum: SortOrder,
   })
+  @IsEnum(SortOrder)
+  @IsOptional()
   order?: SortOrder;
 }
 
-export class SearchKeywordDto {
+export class SearchKeywordDto extends PickType(QueryParamsDto, [
+  'page',
+  'skip',
+  'take',
+  'orderBy',
+  'order',
+]) {
   @ApiPropertyOptional({
     description: '검색할 키워드',
     example: '개발',
     type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(50)
+  @Matches(/^[가-힣a-zA-Z0-9\s]*$/, {
+    message: '특수문자는 사용할 수 없습니다',
   })
   keyword?: string;
 }
