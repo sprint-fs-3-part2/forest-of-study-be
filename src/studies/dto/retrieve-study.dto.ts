@@ -45,6 +45,7 @@ export class RecentStudiesRequestDto {
     maxItems: 3,
     uniqueItems: true,
   })
+  @IsOptional()
   @IsArray()
   @IsUUID('4', { each: true })
   @ArrayMinSize(0)

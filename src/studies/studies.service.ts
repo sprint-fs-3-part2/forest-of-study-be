@@ -6,7 +6,7 @@ import {
   QueryParamsDto,
   SearchKeywordDto,
   RecentStudiesRequestDto,
-} from './dto/retreive-study.dto';
+} from './dto/retrieve-study.dto';
 
 @Injectable()
 export class StudiesService {
