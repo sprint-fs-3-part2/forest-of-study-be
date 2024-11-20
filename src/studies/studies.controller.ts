@@ -15,9 +15,11 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiCustomDocs } from '../shared/swagger/ApiCustomDocs';
 import {
   QueryParamsDto,
+  RecentStudiesResponseDto,
+  RecentStudiesRequestDto,
   SearchKeywordDto,
   SearchKeywordResponseDto,
-} from './dto/retreive-study.dto';
+} from './dto/retrieve-study.dto';
 
 @ApiTags('studies')
 @Controller('studies')
@@ -36,20 +38,27 @@ export class StudiesController {
     responseType: CreateStudyResponseDto,
   })
   @Post()
-  create(@Body() createStudyDto: CreateStudyDto) {
+  createStudy(@Body() createStudyDto: CreateStudyDto) {
     return this.studiesService.createStudy(createStudyDto);
   }
 
   @ApiCustomDocs({
-    summary: '최근 조회한 스터디 목록 조회',
+    summary: '최근 조회한 스터디 목록 요청',
     description: {
-      title: '최근 조회한 스터디 목록을 조회합니다.',
-      contents: ['최근 조회한 스터디 목록을 조회합니다.'],
+      title: '클라이언트에서 최근 조회한 스터디 목록을 요청합니다.',
+      contents: [
+        'localStorage에 저장되어있는 최근 조회한 스터디 목록(UUIDs)을 서버에 요청하고 해당 스터디 목록을 반환합니다.',
+        'UUIDs는 최소 0개에서 최대 3개까지만 전달하며, 중복된 UUID는 전달되지 않습니다.',
+        '존재하지 않는 UUID는 무시합니다.',
+      ],
     },
+    requestType: RecentStudiesRequestDto,
+    responseType: RecentStudiesResponseDto,
   })
-  @Get('recent')
-  getRecentStudies() {
-    return this.studiesService.getRecentStudies();
+  // @GET으로 변경 시 axios 요청 시 body를 보낼 수 없기 때문에 RESTful하지 않으나 POST로 구현함
+  @Post('recent')
+  getRecentStudies(@Body() recentStudiesRequestDto?: RecentStudiesRequestDto) {
+    return this.studiesService.getRecentStudies(recentStudiesRequestDto);
   }
 
   @ApiCustomDocs({

@@ -1,11 +1,21 @@
-import { ApiPropertyOptional, OmitType, PickType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PickType,
+} from '@nestjs/swagger';
 import { CreateStudyDto } from './create-study.dto';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  ArrayUnique,
+  IsArray,
   IsEnum,
   IsInt,
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   Matches,
   Max,
   MaxLength,
@@ -23,6 +33,39 @@ export enum SortOrder {
   asc = 'asc',
 }
 
+/**
+ * UUID 배열을 받아 최근 방문한 스터디 목록을 조회할 때 사용할 데이터 형식을 정의한 객체
+ * - 중복된 UUID를 받지 않도록 @ArrayUnique() 데코레이터를 사용
+ * - 최대 3개로 제한하는 이유: 화면에 최대 3개까지만 표시하기로 결정함
+ */
+export class RecentStudiesRequestDto {
+  @ApiProperty({
+    description: '조회할 스터디 UUID(v4) 배열(0~3개)',
+    example: [
+      'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+      '550e8400-e29b-41d4-a716-446655440000',
+    ],
+    type: [String],
+    minItems: 0,
+    maxItems: 3,
+    uniqueItems: true,
+  })
+  @IsArray()
+  @IsUUID('4', {
+    each: true,
+    message: 'UUID(v4) 형식이어야 합니다',
+  })
+  @ArrayMinSize(0)
+  @ArrayMaxSize(3, {
+    message: '최대 3개의 스터디 UUID를 전달할 수 있습니다',
+  })
+  @ArrayUnique({
+    message: '중복된 UUID는 전달할 수 없습니다',
+  })
+  uuids: string[];
+}
+
+// 스터디 목록 조회 시 Query String으로 받을 데이터 형식을 정의한 객체
 export class QueryParamsDto {
   @ApiPropertyOptional({
     description:
@@ -79,6 +122,7 @@ export class QueryParamsDto {
   order?: SortOrder;
 }
 
+// 스터디 검색 시 검색 키워드를 받을 데이터 형식을 정의한 객체
 export class SearchKeywordDto extends PickType(QueryParamsDto, [
   'page',
   'skip',
@@ -103,8 +147,20 @@ export class SearchKeywordDto extends PickType(QueryParamsDto, [
   keyword?: string;
 }
 
-// SearchKeywordResponseDto는 스터디 검색 시 클라이언트에게 전달할(응답) 데이터 형식을 정의한 객체
-// password 필드를 제외한 CreateStudyDto를 상속받아 사용
-export class SearchKeywordResponseDto extends OmitType(CreateStudyDto, [
+/**
+ * 스터디 응답 DTO로서, `CreateStudyDto`에서 `password` 필드를 제외한 클래스입니다.
+ */
+export class StudyResponseDto extends OmitType(CreateStudyDto, [
   'password',
 ] as const) {}
+
+/**
+ * 스터디 검색 결과를 반환하기 위한 DTO
+ * @extends StudyResponseDto
+ */
+export class SearchKeywordResponseDto extends StudyResponseDto {}
+/**
+ * 최근 조회한 스터디 목록을 반환하기 위한 DTO
+ * @extends StudyResponseDto
+ */
+export class RecentStudiesResponseDto extends StudyResponseDto {}

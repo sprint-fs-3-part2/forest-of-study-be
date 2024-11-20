@@ -1,36 +1,45 @@
-import { Injectable, Query } from '@nestjs/common';
+import { BadRequestException, Injectable, Query } from '@nestjs/common';
 import { CreateStudyDto, CreateStudyResponseDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { QueryParamsDto, SearchKeywordDto } from './dto/retreive-study.dto';
+import {
+  QueryParamsDto,
+  SearchKeywordDto,
+  RecentStudiesRequestDto,
+} from './dto/retrieve-study.dto';
 
 @Injectable()
 export class StudiesService {
-  // 최근 조회한 스터디 UUID 배열을 저장(private로 선언하여 외부에서 접근 불가능하도록 함)
-  private recentStudies: string[] = [];
   // PrismaService를 주입
   constructor(private readonly prisma: PrismaService) {}
 
-  async OnModuleInit() {
-    // 클라이언트 로컬 스토리지에서 최근 조회한 StudyId 배열을 가져옴, 없으면 빈 배열을 할당
-    this.recentStudies =
-      JSON.parse(localStorage.getItem('recentStudies')) || [];
-  }
+  // 민감한 필드를 상수로 선언하기
+  private readonly SENSITIVE_FIELDS = {
+    password: true,
+    createdAt: true,
+    updatedAt: true,
+  } as const;
 
-  async getRecentStudies() {
+  async getRecentStudies(recentStudiesRequestDto?: RecentStudiesRequestDto) {
+    // 가져온 UUIDs DTO 유효성 검사
+    const { uuids = [] } = recentStudiesRequestDto || {};
+    if (uuids.length > 3) {
+      throw new BadRequestException(
+        '최대 3개의 스터디 UUID를 전달할 수 있습니다',
+      );
+    }
     // 최근 조회한 Study ID 배열을 이용하여 최근 조회한 스터디 목록을 가져옴
     const studies = await this.prisma.study.findMany({
+      omit: this.SENSITIVE_FIELDS,
       where: {
         id: {
-          in: this.recentStudies,
+          in: uuids,
         },
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
-    const newRecentStudies = studies.map((study) => study.id);
-    localStorage.setItem('recentStudies', JSON.stringify(newRecentStudies));
     return studies;
   }
 
@@ -40,7 +49,6 @@ export class StudiesService {
       data: createStudyDto,
     });
     return CreateStudyResponseDto.of(study.id);
-    // return study.id;
   }
 
   async getStudies(@Query() queryParamsDto: QueryParamsDto) {
@@ -54,6 +62,7 @@ export class StudiesService {
       order = 'desc',
     } = queryParamsDto;
     return this.prisma.study.findMany({
+      omit: this.SENSITIVE_FIELDS,
       skip: Number((page - 1) * take) || 0,
       take: Number(take) || 6,
       orderBy: { [orderBy || 'createdAt']: order || 'desc' },
@@ -70,12 +79,8 @@ export class StudiesService {
       orderBy = 'createdAt',
       order = 'desc',
     } = searchKeywordDto;
-    return this.prisma.study.findMany({
-      omit: {
-        password: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+    const studies = await this.prisma.study.findMany({
+      omit: this.SENSITIVE_FIELDS,
       skip: Number((page - 1) * take) || 0,
       take: Number(take) || 6,
       orderBy: { [orderBy || 'createdAt']: order || 'desc' },
@@ -102,11 +107,13 @@ export class StudiesService {
         ],
       },
     });
+    return studies;
   }
 
   async getStudyById(id: string) {
     // return `This action returns a #${id} study`;
     return this.prisma.study.findUnique({
+      omit: this.SENSITIVE_FIELDS,
       where: {
         id,
       },
