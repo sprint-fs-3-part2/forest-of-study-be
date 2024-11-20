@@ -147,7 +147,9 @@ export class SearchKeywordDto extends PickType(QueryParamsDto, [
   keyword?: string;
 }
 
-// password 필드를 제외한 CreateStudyDto를 상속받아 사용하기 위해 정의
+/**
+ * 스터디 응답 DTO로서, `CreateStudyDto`에서 `password` 필드를 제외한 클래스입니다.
+ */
 export class StudyResponseDto extends OmitType(CreateStudyDto, [
   'password',
 ] as const) {}

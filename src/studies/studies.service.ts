@@ -21,30 +21,26 @@ export class StudiesService {
   } as const;
 
   async getRecentStudies(recentStudiesRequestDto?: RecentStudiesRequestDto) {
-    try {
-      // 가져온 UUIDs DTO 유효성 검사
-      const { uuids = [] } = recentStudiesRequestDto;
-      if (uuids.length > 3) {
-        throw new BadRequestException(
-          '최대 3개의 스터디 UUID를 전달할 수 있습니다',
-        );
-      }
-      // 최근 조회한 Study ID 배열을 이용하여 최근 조회한 스터디 목록을 가져옴
-      const studies = await this.prisma.study.findMany({
-        omit: this.SENSITIVE_FIELDS,
-        where: {
-          id: {
-            in: uuids,
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-      return studies;
-    } catch (error) {
-      throw error;
+    // 가져온 UUIDs DTO 유효성 검사
+    const { uuids = [] } = recentStudiesRequestDto || {};
+    if (uuids.length > 3) {
+      throw new BadRequestException(
+        '최대 3개의 스터디 UUID를 전달할 수 있습니다',
+      );
     }
+    // 최근 조회한 Study ID 배열을 이용하여 최근 조회한 스터디 목록을 가져옴
+    const studies = await this.prisma.study.findMany({
+      omit: this.SENSITIVE_FIELDS,
+      where: {
+        id: {
+          in: uuids,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return studies;
   }
 
   async createStudy(createStudyDto: CreateStudyDto) {
