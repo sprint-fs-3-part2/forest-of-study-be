@@ -1,11 +1,16 @@
 import { ApiPropertyOptional, OmitType, PickType } from '@nestjs/swagger';
 import { CreateStudyDto } from './create-study.dto';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  ArrayUnique,
+  IsArray,
   IsEnum,
   IsInt,
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   Matches,
   Max,
   MaxLength,
@@ -23,6 +28,29 @@ export enum SortOrder {
   asc = 'asc',
 }
 
+// UUID 배열을 받아 최근 방문한 스터디 목록을 조회할 때 사용할 데이터 형식을 정의한 객체
+// 중복된 UUID를 받지 않도록 @ArrayUnique() 데코레이터를 사용
+export class RecentStudiesRequestDto {
+  @ApiPropertyOptional({
+    description: '조회할 스터디 UUID(v4) 배열(0~3개)',
+    example: [
+      'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+      '550e8400-e29b-41d4-a716-446655440000',
+    ],
+    type: [String],
+    minItems: 0,
+    maxItems: 3,
+    uniqueItems: true,
+  })
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @ArrayMinSize(0)
+  @ArrayMaxSize(3)
+  @ArrayUnique()
+  uuids: string[];
+}
+
+// 스터디 목록 조회 시 Query String으로 받을 데이터 형식을 정의한 객체
 export class QueryParamsDto {
   @ApiPropertyOptional({
     description:
@@ -79,6 +107,7 @@ export class QueryParamsDto {
   order?: SortOrder;
 }
 
+// 스터디 검색 시 검색 키워드를 받을 데이터 형식을 정의한 객체
 export class SearchKeywordDto extends PickType(QueryParamsDto, [
   'page',
   'skip',
@@ -106,5 +135,9 @@ export class SearchKeywordDto extends PickType(QueryParamsDto, [
 // SearchKeywordResponseDto는 스터디 검색 시 클라이언트에게 전달할(응답) 데이터 형식을 정의한 객체
 // password 필드를 제외한 CreateStudyDto를 상속받아 사용
 export class SearchKeywordResponseDto extends OmitType(CreateStudyDto, [
+  'password',
+] as const) {}
+
+export class RecentStudiesResponseDto extends OmitType(CreateStudyDto, [
   'password',
 ] as const) {}

@@ -15,6 +15,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApiCustomDocs } from '../shared/swagger/ApiCustomDocs';
 import {
   QueryParamsDto,
+  RecentStudiesResponseDto,
+  RecentStudiesRequestDto,
   SearchKeywordDto,
   SearchKeywordResponseDto,
 } from './dto/retreive-study.dto';
@@ -36,20 +38,22 @@ export class StudiesController {
     responseType: CreateStudyResponseDto,
   })
   @Post()
-  create(@Body() createStudyDto: CreateStudyDto) {
+  createStudy(@Body() createStudyDto: CreateStudyDto) {
     return this.studiesService.createStudy(createStudyDto);
   }
 
   @ApiCustomDocs({
-    summary: '최근 조회한 스터디 목록 조회',
+    summary: '최근 조회한 스터디 목록 요청',
     description: {
-      title: '최근 조회한 스터디 목록을 조회합니다.',
+      title: '최근 조회한 스터디 목록을 요청합니다.',
       contents: ['최근 조회한 스터디 목록을 조회합니다.'],
     },
+    requestType: RecentStudiesRequestDto,
+    responseType: RecentStudiesResponseDto,
   })
-  @Get('recent')
-  getRecentStudies() {
-    return this.studiesService.getRecentStudies();
+  @Post('recent')
+  getRecentStudies(@Body() recentStudiesRequestDto?: RecentStudiesRequestDto) {
+    return this.studiesService.getRecentStudies(recentStudiesRequestDto);
   }
 
   @ApiCustomDocs({

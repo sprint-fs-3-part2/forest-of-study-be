@@ -2,7 +2,11 @@ import { Injectable, Query } from '@nestjs/common';
 import { CreateStudyDto, CreateStudyResponseDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { QueryParamsDto, SearchKeywordDto } from './dto/retreive-study.dto';
+import {
+  QueryParamsDto,
+  SearchKeywordDto,
+  RecentStudiesRequestDto,
+} from './dto/retreive-study.dto';
 
 @Injectable()
 export class StudiesService {
@@ -11,15 +15,15 @@ export class StudiesService {
   // PrismaService를 주입
   constructor(private readonly prisma: PrismaService) {}
 
-  async OnModuleInit() {
-    // 클라이언트 로컬 스토리지에서 최근 조회한 StudyId 배열을 가져옴, 없으면 빈 배열을 할당
-    this.recentStudies =
-      JSON.parse(localStorage.getItem('recentStudies')) || [];
-  }
-
-  async getRecentStudies() {
+  async getRecentStudies(recentStudiesRequestDto?: RecentStudiesRequestDto) {
     // 최근 조회한 Study ID 배열을 이용하여 최근 조회한 스터디 목록을 가져옴
+    this.recentStudies = recentStudiesRequestDto?.uuids || [];
     const studies = await this.prisma.study.findMany({
+      omit: {
+        password: true,
+        createdAt: true,
+        updatedAt: true,
+      },
       where: {
         id: {
           in: this.recentStudies,
@@ -29,8 +33,6 @@ export class StudiesService {
         createdAt: 'desc',
       },
     });
-    const newRecentStudies = studies.map((study) => study.id);
-    localStorage.setItem('recentStudies', JSON.stringify(newRecentStudies));
     return studies;
   }
 
@@ -40,7 +42,6 @@ export class StudiesService {
       data: createStudyDto,
     });
     return CreateStudyResponseDto.of(study.id);
-    // return study.id;
   }
 
   async getStudies(@Query() queryParamsDto: QueryParamsDto) {
