@@ -1,4 +1,9 @@
-import { ApiPropertyOptional, OmitType, PickType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PickType,
+} from '@nestjs/swagger';
 import { CreateStudyDto } from './create-study.dto';
 import {
   ArrayMaxSize,
@@ -34,7 +39,7 @@ export enum SortOrder {
  * - 최대 3개로 제한하는 이유: 화면에 최대 3개까지만 표시하기로 결정함
  */
 export class RecentStudiesRequestDto {
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: '조회할 스터디 UUID(v4) 배열(0~3개)',
     example: [
       'f47ac10b-58cc-4372-a567-0e02b2c3d479',
@@ -45,7 +50,6 @@ export class RecentStudiesRequestDto {
     maxItems: 3,
     uniqueItems: true,
   })
-  @IsOptional()
   @IsArray()
   @IsUUID('4', {
     each: true,
@@ -144,17 +148,17 @@ export class SearchKeywordDto extends PickType(QueryParamsDto, [
 }
 
 // password 필드를 제외한 CreateStudyDto를 상속받아 사용하기 위해 정의
-export class OmitPasswordDto extends OmitType(CreateStudyDto, [
+export class StudyResponseDto extends OmitType(CreateStudyDto, [
   'password',
 ] as const) {}
 
 /**
  * 스터디 검색 결과를 반환하기 위한 DTO
- * @extends OmitPasswordDto
+ * @extends StudyResponseDto
  */
-export class SearchKeywordResponseDto extends OmitPasswordDto {}
+export class SearchKeywordResponseDto extends StudyResponseDto {}
 /**
  * 최근 조회한 스터디 목록을 반환하기 위한 DTO
- * @extends OmitPasswordDto
+ * @extends StudyResponseDto
  */
-export class RecentStudiesResponseDto extends OmitPasswordDto {}
+export class RecentStudiesResponseDto extends StudyResponseDto {}

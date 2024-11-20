@@ -1,4 +1,4 @@
-import { Injectable, Query } from '@nestjs/common';
+import { BadRequestException, Injectable, Query } from '@nestjs/common';
 import { CreateStudyDto, CreateStudyResponseDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -25,7 +25,9 @@ export class StudiesService {
       // 가져온 UUIDs DTO 유효성 검사
       const { uuids = [] } = recentStudiesRequestDto;
       if (uuids.length > 3) {
-        throw new Error('최대 3개의 스터디 UUID를 전달할 수 있습니다');
+        throw new BadRequestException(
+          '최대 3개의 스터디 UUID를 전달할 수 있습니다',
+        );
       }
       // 최근 조회한 Study ID 배열을 이용하여 최근 조회한 스터디 목록을 가져옴
       const studies = await this.prisma.study.findMany({
@@ -39,12 +41,9 @@ export class StudiesService {
           createdAt: 'desc',
         },
       });
-      if (studies.length === 0) {
-        return { studies: [], message: '아직 조회한 스터디가 없어요' };
-      }
       return studies;
     } catch (error) {
-      return { error: error.message };
+      throw error;
     }
   }
 
@@ -75,51 +74,44 @@ export class StudiesService {
   }
 
   async searchStudies(@Query() searchKeywordDto: SearchKeywordDto) {
-    try {
-      // 스터디 목록 조회 시, 검색어를 이용하여 스터디 목록을 조회
-      // 검색 대상은 name, nickname, intro 필드
-      const {
-        keyword,
-        page = 1,
-        take = 6,
-        orderBy = 'createdAt',
-        order = 'desc',
-      } = searchKeywordDto;
-      const studies = await this.prisma.study.findMany({
-        omit: this.SENSITIVE_FIELDS,
-        skip: Number((page - 1) * take) || 0,
-        take: Number(take) || 6,
-        orderBy: { [orderBy || 'createdAt']: order || 'desc' },
-        where: {
-          OR: [
-            {
-              name: {
-                contains: keyword,
-                mode: 'insensitive',
-              },
+    // 스터디 목록 조회 시, 검색어를 이용하여 스터디 목록을 조회
+    // 검색 대상은 name, nickname, intro 필드
+    const {
+      keyword,
+      page = 1,
+      take = 6,
+      orderBy = 'createdAt',
+      order = 'desc',
+    } = searchKeywordDto;
+    const studies = await this.prisma.study.findMany({
+      omit: this.SENSITIVE_FIELDS,
+      skip: Number((page - 1) * take) || 0,
+      take: Number(take) || 6,
+      orderBy: { [orderBy || 'createdAt']: order || 'desc' },
+      where: {
+        OR: [
+          {
+            name: {
+              contains: keyword,
+              mode: 'insensitive',
             },
-            {
-              nickname: {
-                contains: keyword,
-                mode: 'insensitive',
-              },
+          },
+          {
+            nickname: {
+              contains: keyword,
+              mode: 'insensitive',
             },
-            {
-              intro: {
-                contains: keyword,
-                mode: 'insensitive',
-              },
+          },
+          {
+            intro: {
+              contains: keyword,
+              mode: 'insensitive',
             },
-          ],
-        },
-      });
-      if (studies.length === 0) {
-        return { studies: [], message: '아직 둘러 볼 스터디가 없어요' };
-      }
-      return studies;
-    } catch (error) {
-      return { error: error.message };
-    }
+          },
+        ],
+      },
+    });
+    return studies;
   }
 
   async getStudyById(id: string) {
