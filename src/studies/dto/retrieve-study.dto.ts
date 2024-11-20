@@ -47,10 +47,17 @@ export class RecentStudiesRequestDto {
   })
   @IsOptional()
   @IsArray()
-  @IsUUID('4', { each: true })
+  @IsUUID('4', {
+    each: true,
+    message: 'UUID(v4) 형식이어야 합니다',
+  })
   @ArrayMinSize(0)
-  @ArrayMaxSize(3)
-  @ArrayUnique()
+  @ArrayMaxSize(3, {
+    message: '최대 3개의 스터디 UUID를 전달할 수 있습니다',
+  })
+  @ArrayUnique({
+    message: '중복된 UUID는 전달할 수 없습니다',
+  })
   uuids: string[];
 }
 
@@ -141,7 +148,13 @@ export class OmitPasswordDto extends OmitType(CreateStudyDto, [
   'password',
 ] as const) {}
 
-// SearchKeywordResponseDto는 스터디 검색 시 클라이언트에게 전달할(응답) 데이터 형식을 정의한 객체
+/**
+ * 스터디 검색 결과를 반환하기 위한 DTO
+ * @extends OmitPasswordDto
+ */
 export class SearchKeywordResponseDto extends OmitPasswordDto {}
-// RecentStudiesResponseDto는 최근 조회한 스터디 목록 조회 시 클라이언트에게 전달할(응답) 데이터 형식을 정의한 객체
+/**
+ * 최근 조회한 스터디 목록을 반환하기 위한 DTO
+ * @extends OmitPasswordDto
+ */
 export class RecentStudiesResponseDto extends OmitPasswordDto {}
