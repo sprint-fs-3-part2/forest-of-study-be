@@ -10,23 +10,23 @@ import {
 
 @Injectable()
 export class StudiesService {
-  // 최근 조회한 스터디 UUID 배열을 저장(private로 선언하여 외부에서 접근 불가능하도록 함)
-  private recentStudies: string[] = [];
   // PrismaService를 주입
   constructor(private readonly prisma: PrismaService) {}
 
+  // 민감한 필드를 상수로 선언하기
+  private readonly SENSITIVE_FIELDS = {
+    password: true,
+    createdAt: true,
+    updatedAt: true,
+  } as const;
+
   async getRecentStudies(recentStudiesRequestDto?: RecentStudiesRequestDto) {
     // 최근 조회한 Study ID 배열을 이용하여 최근 조회한 스터디 목록을 가져옴
-    this.recentStudies = recentStudiesRequestDto?.uuids || [];
     const studies = await this.prisma.study.findMany({
-      omit: {
-        password: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      omit: this.SENSITIVE_FIELDS,
       where: {
         id: {
-          in: this.recentStudies,
+          in: recentStudiesRequestDto?.uuids || [],
         },
       },
       orderBy: {

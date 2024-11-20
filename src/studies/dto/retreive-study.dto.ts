@@ -28,8 +28,11 @@ export enum SortOrder {
   asc = 'asc',
 }
 
-// UUID 배열을 받아 최근 방문한 스터디 목록을 조회할 때 사용할 데이터 형식을 정의한 객체
-// 중복된 UUID를 받지 않도록 @ArrayUnique() 데코레이터를 사용
+/**
+ * UUID 배열을 받아 최근 방문한 스터디 목록을 조회할 때 사용할 데이터 형식을 정의한 객체
+ * - 중복된 UUID를 받지 않도록 @ArrayUnique() 데코레이터를 사용
+ * - 최대 3개로 제한하는 이유: 화면에 최대 3개까지만 표시하기로 결정함
+ */
 export class RecentStudiesRequestDto {
   @ApiPropertyOptional({
     description: '조회할 스터디 UUID(v4) 배열(0~3개)',
@@ -132,12 +135,12 @@ export class SearchKeywordDto extends PickType(QueryParamsDto, [
   keyword?: string;
 }
 
-// SearchKeywordResponseDto는 스터디 검색 시 클라이언트에게 전달할(응답) 데이터 형식을 정의한 객체
-// password 필드를 제외한 CreateStudyDto를 상속받아 사용
-export class SearchKeywordResponseDto extends OmitType(CreateStudyDto, [
+// password 필드를 제외한 CreateStudyDto를 상속받아 사용하기 위해 정의
+export class OmitPasswordDto extends OmitType(CreateStudyDto, [
   'password',
 ] as const) {}
 
-export class RecentStudiesResponseDto extends OmitType(CreateStudyDto, [
-  'password',
-] as const) {}
+// SearchKeywordResponseDto는 스터디 검색 시 클라이언트에게 전달할(응답) 데이터 형식을 정의한 객체
+export class SearchKeywordResponseDto extends OmitPasswordDto {}
+// RecentStudiesResponseDto는 최근 조회한 스터디 목록 조회 시 클라이언트에게 전달할(응답) 데이터 형식을 정의한 객체
+export class RecentStudiesResponseDto extends OmitPasswordDto {}

@@ -45,8 +45,10 @@ export class StudiesController {
   @ApiCustomDocs({
     summary: '최근 조회한 스터디 목록 요청',
     description: {
-      title: '최근 조회한 스터디 목록을 요청합니다.',
-      contents: ['최근 조회한 스터디 목록을 조회합니다.'],
+      title: '클라이언트에서 최근 조회한 스터디 목록을 요청합니다.',
+      contents: [
+        'localStorage에 저장되어있는 최근 조회한 스터디 목록(UUIDs)을 서버에 요청하고 해당 스터디 목록을 반환합니다.',
+      ],
     },
     requestType: RecentStudiesRequestDto,
     responseType: RecentStudiesResponseDto,
