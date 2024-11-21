@@ -1,5 +1,6 @@
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PrismaService
@@ -11,15 +12,11 @@ export class PrismaService
 {
   private static instance: PrismaService;
 
-  constructor() {
-    const url =
-      process.env.NODE_ENV === 'LOCAL'
-        ? process.env.LOCAL_DATABASE_URL
-        : process.env.DATABASE_URL;
+  constructor(config: ConfigService) {
     super({
       datasources: {
         db: {
-          url: url as string,
+          url: config.get<string>('DATABASE_URL'),
         },
       } as Prisma.Datasources,
     });
@@ -27,7 +24,7 @@ export class PrismaService
 
   static getInstance(): PrismaService {
     if (!PrismaService.instance) {
-      PrismaService.instance = new PrismaService();
+      PrismaService.instance = new PrismaService(new ConfigService());
       PrismaService.instance.$connect();
     }
     return PrismaService.instance;
