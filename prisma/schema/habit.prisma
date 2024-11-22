@@ -1,15 +1,10 @@
-/// 습관 모델
-/// - 스터디 내에서 사용자가 설정한 습관을 관리
-/// - Study 모델과 1:N 관계
-/// - CompletedHabit 모델과 1:N 관계
-/// - 주요 필드: name(습관 이름), completed(완료 여부)
 model Habit {
-  id        String  @id @default(uuid())
-  studyId   String
-  name      String  @db.VarChar(100) /// 습관의 이름(물 마시기, 책 읽기 등)
-  completed Boolean   @default(false) /// 습관 완료 여부
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  study     Study     @relation(fields: [studyId], references: [id], onDelete: Cascade) /// 습관이 속한 스터디
-  completedHabits CompletedHabit[] /// 습관에 연관된 완료된 습관들
+  id              String           @id @default(uuid())
+  studyId         String
+  /// 습관의 이름(물 마시기, 책 읽기 등)
+  name            String           @db.VarChar(100)
+  completedHabits CompletedHabit[]
+  study           Study            @relation(fields: [studyId], references: [id], onDelete: Cascade)
+
+  @@index([studyId])
 }
