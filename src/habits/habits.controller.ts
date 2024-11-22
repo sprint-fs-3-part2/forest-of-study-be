@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { HabitsService } from './habits.service';
-import { CreateHabitDto } from './dto/create-habit.dto';
+import { CreateHabitDto, CreateStudyResponseDto } from './dto/create-habit.dto';
 import { UpdateHabitDto } from './dto/update-habit.dto';
 
 @Controller('habits')
@@ -16,15 +16,15 @@ export class HabitsController {
   constructor(private readonly habitsService: HabitsService) {}
 
   @ApiCustomDocs({
-    summary: '습관 생성',
+    summary: '오늘의 습관 조회',
     description: {
-      title: '습관를 생성합니다.',
+      title: '오늘의 습관을 조회합니다.',
       contents: [
-        // '스터디 이름, 스터디 개설자 닉네임, 스터디 소개, 배경화면, 비밀번호를 입력받아 스터디를 생성합니다.',
+        '현재 시간, 오늘의 습관 목록, 오늘의 집중 및 홈 버튼을 통해 오늘의 집중 페이지 및 스터디 홈으로 나갈 수 있습니다. 비밀번호를 입력하여 스터디 등록 시 입력했던 비밀번호와 일치할 경우, 오늘의 습관 조회',
       ],
     },
-    // requestType: CreateStudyDto,
-    // responseType: CreateStudyResponseDto,
+    requestType: CreateHabitDto,
+    responseType: CreateStudyResponseDto,
   })
   @Post()
   create(@Body() createHabitDto: CreateHabitDto) {
