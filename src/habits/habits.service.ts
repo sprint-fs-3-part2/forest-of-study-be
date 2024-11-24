@@ -215,6 +215,20 @@ export class HabitsService {
     return CompletedHabitResponseDto.of(completedHabit);
   }
 
+  async deleteCompletedHabit(id: string): Promise<void> {
+    const habit = await this.prisma.completedHabit.findUnique({
+      where: { id },
+    });
+    if (!habit) throw new NotFoundException('습관을 찾을 수 없습니다.');
+
+    if (habit.completedAt.toDateString() !== new Date().toDateString())
+      throw new BadRequestException('오늘 습관만 삭제할 수 있습니다');
+
+    await this.prisma.completedHabit.delete({
+      where: { id },
+    });
+  }
+
   private getWeekDateRange() {
     const today = new Date();
     const startOfWeek = new Date(today);
