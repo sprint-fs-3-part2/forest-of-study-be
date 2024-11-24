@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -16,6 +17,7 @@ import {
   CreateHabitsResponseDto,
 } from './dto/create-habit.dto';
 import {
+  DeleteHabitsDto,
   UpdateHabitsDto,
   UpdateHabitsResponseDto,
 } from './dto/update-habit.dto';
@@ -105,5 +107,31 @@ export class HabitsController {
     @Body() updateHabitsDto: UpdateHabitsDto,
   ): Promise<UpdateHabitsResponseDto> {
     return await this.habitsService.updateHabits(studyId, updateHabitsDto);
+  }
+
+  @Delete(':studyId')
+  @ApiCustomDocs({
+    summary: '여러 습관 동시 삭제',
+    description: {
+      title: '스터디의 여러 습관을 한번에 삭제합니다.',
+    },
+    requestType: {
+      params: [
+        {
+          name: 'studyId',
+          description: '스터디 ID',
+          required: true,
+          type: 'string',
+          format: 'uuid',
+        },
+      ],
+      body: DeleteHabitsDto,
+    },
+  })
+  async deleteHabits(
+    @Param('studyId', ParseUUIDPipe) studyId: string,
+    @Body() deleteHabitsDto: DeleteHabitsDto,
+  ): Promise<void> {
+    await this.habitsService.deleteHabits(studyId, deleteHabitsDto);
   }
 }
