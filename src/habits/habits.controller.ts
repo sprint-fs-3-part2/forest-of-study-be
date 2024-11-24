@@ -1,8 +1,19 @@
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { HabitsService } from './habits.service';
 import { StudyHabitsResponseDto } from './dto/retrieve-habit.dto';
 import { ApiCustomDocs } from 'src/shared/swagger/ApiCustomDocs';
 import { ApiTags } from '@nestjs/swagger';
+import {
+  CreateHabitsDto,
+  CreateHabitsResponseDto,
+} from './dto/create-habit.dto';
 
 @ApiTags('habits')
 @Controller('habits')
@@ -33,5 +44,33 @@ export class HabitsController {
     @Param('studyId', ParseUUIDPipe) studyId: string,
   ): Promise<StudyHabitsResponseDto> {
     return await this.habitsService.getHabits(studyId);
+  }
+
+  @Post(':studyId')
+  @ApiCustomDocs({
+    summary: '여러 습관 동시 생성',
+    description: {
+      title: '스터디에 여러 습관을 한번에 생성합니다.',
+      contents: ['중복된 이름의 습관은 생성할 수 없습니다.'],
+    },
+    requestType: {
+      params: [
+        {
+          name: 'studyId',
+          description: '스터디 ID',
+          required: true,
+          type: 'string',
+          format: 'uuid',
+        },
+      ],
+      body: CreateHabitsDto,
+    },
+    responseType: CreateHabitsResponseDto,
+  })
+  async createHabits(
+    @Param('studyId', ParseUUIDPipe) studyId: string,
+    @Body() createHabitsDto: CreateHabitsDto,
+  ): Promise<CreateHabitsResponseDto> {
+    return await this.habitsService.createHabits(studyId, createHabitsDto);
   }
 }
