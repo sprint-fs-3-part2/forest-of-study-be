@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  CompletedHabitResponseDto,
   CreateHabitsDto,
   CreateHabitsResponseDto,
 } from './dto/create-habit.dto';
@@ -174,6 +175,44 @@ export class HabitsService {
         `${error.message} 습관 삭제에 실패했습니다.`,
       );
     }
+  }
+
+  async completeHabit(habitId: string): Promise<CompletedHabitResponseDto> {
+    const habit = await this.prisma.habit.findUnique({
+      where: { id: habitId },
+    });
+
+    if (!habit) {
+      throw new NotFoundException('습관을 찾을 수 없습니다.');
+    }
+
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const existingComplete = await this.prisma.completedHabit.findFirst({
+      where: {
+        habitId,
+        completedAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+    });
+
+    if (existingComplete) {
+      throw new BadRequestException('이미 오늘 완료한 습관입니다.');
+    }
+
+    const completedHabit = await this.prisma.completedHabit.create({
+      data: {
+        habitId,
+        studyId: habit.studyId,
+        completedAt: new Date(),
+      },
+    });
+
+    return CompletedHabitResponseDto.of(completedHabit);
   }
 
   private getWeekDateRange() {
