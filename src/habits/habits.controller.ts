@@ -13,6 +13,7 @@ import { StudyHabitsResponseDto } from './dto/retrieve-habit.dto';
 import { ApiCustomDocs } from 'src/shared/swagger/ApiCustomDocs';
 import { ApiTags } from '@nestjs/swagger';
 import {
+  CompletedHabitResponseDto,
   CreateHabitsDto,
   CreateHabitsResponseDto,
 } from './dto/create-habit.dto';
@@ -159,5 +160,30 @@ export class HabitsController {
     @Param('habitId', ParseUUIDPipe) habitId: string,
   ): Promise<CompletedHabitResponseDto> {
     return await this.habitsService.completeHabit(habitId);
+  }
+
+  @Delete(':habitId/complete')
+  @ApiCustomDocs({
+    summary: '완료된 습관 삭제',
+    description: {
+      title: '완료된 습관을 삭제합니다.',
+      contents: ['오늘 완료된 습관만 삭제할 수 있습니다.'],
+    },
+    requestType: {
+      params: [
+        {
+          name: 'habitId',
+          description: '완료할 습관 ID',
+          required: true,
+          type: 'string',
+          format: 'uuid',
+        },
+      ],
+    },
+  })
+  async deleteCompletedHabit(
+    @Param('habitId', ParseUUIDPipe) habitId: string,
+  ): Promise<void> {
+    await this.habitsService.deleteCompletedHabit(habitId);
   }
 }
