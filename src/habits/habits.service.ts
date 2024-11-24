@@ -1,26 +1,54 @@
-import { Injectable } from '@nestjs/common';
-import { CreateHabitDto } from './dto/create-habit.dto';
-import { UpdateHabitDto } from './dto/update-habit.dto';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  CreateHabitsDto,
+  CreateHabitsResponseDto,
+} from './dto/create-habit.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class HabitsService {
-  create(createHabitDto: CreateHabitDto) {
-    return 'This action adds a new habit';
-  }
+  constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all habits`;
-  }
+  async createHabits(
+    studyId: string,
+    createHabitsDto: CreateHabitsDto,
+  ): Promise<CreateHabitsResponseDto> {
+    const study = await this.prisma.study.findUnique({
+      where: { id: studyId },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} habit`;
-  }
+    if (!study) {
+      throw new NotFoundException('스터디를 찾을 수 없습니다.');
+    }
 
-  update(id: number, updateHabitDto: UpdateHabitDto) {
-    return `This action updates a #${id} habit`;
-  }
+    const existingHabits = await this.prisma.habit.findMany({
+      where: {
+        studyId,
+        name: { in: createHabitsDto.habits.map((habit) => habit.name) },
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} habit`;
+    if (existingHabits.length > 0) {
+      throw new ConflictException(
+        `이미 존재하는 습관이 있습니다: ${existingHabits.map((habit) => habit.name).join(', ')}`,
+      );
+    }
+
+    const createdHabits = await this.prisma.$transaction(
+      createHabitsDto.habits.map((habit) =>
+        this.prisma.habit.create({
+          data: {
+            name: habit.name,
+            studyId,
+          },
+        }),
+      ),
+    );
+
+    return CreateHabitsResponseDto.of(createdHabits);
   }
 }
