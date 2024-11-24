@@ -10,6 +10,7 @@ import {
 } from './dto/create-habit.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  DeleteHabitsDto,
   UpdateHabitsDto,
   UpdateHabitsResponseDto,
 } from './dto/update-habit.dto';
@@ -140,6 +141,38 @@ export class HabitsService {
         throw new BadRequestException('습관 정보를 조회하는데 실패했습니다.');
       }
       throw error;
+    }
+  }
+
+  async deleteHabits(
+    studyId: string,
+    deleteHabitsDto: DeleteHabitsDto,
+  ): Promise<void> {
+    const existingHabits = await this.prisma.habit.findMany({
+      where: {
+        studyId,
+        name: { in: deleteHabitsDto.habits.map((habit) => habit.id) },
+      },
+    });
+
+    if (existingHabits.length !== deleteHabitsDto.habits.length)
+      throw new NotFoundException(
+        '일부 습관을 찾을 수 없거나 해당 스터디에 속하지 않습니다.',
+      );
+
+    try {
+      await this.prisma.$transaction([
+        this.prisma.habit.deleteMany({
+          where: {
+            id: { in: deleteHabitsDto.habits.map((habit) => habit.id) },
+            studyId,
+          },
+        }),
+      ]);
+    } catch (error) {
+      throw new BadRequestException(
+        `${error.message} 습관 삭제에 실패했습니다.`,
+      );
     }
   }
 
