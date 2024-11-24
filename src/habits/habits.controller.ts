@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { HabitsService } from './habits.service';
@@ -14,6 +15,10 @@ import {
   CreateHabitsDto,
   CreateHabitsResponseDto,
 } from './dto/create-habit.dto';
+import {
+  UpdateHabitsDto,
+  UpdateHabitsResponseDto,
+} from './dto/update-habit.dto';
 
 @ApiTags('habits')
 @Controller('habits')
@@ -72,5 +77,33 @@ export class HabitsController {
     @Body() createHabitsDto: CreateHabitsDto,
   ): Promise<CreateHabitsResponseDto> {
     return await this.habitsService.createHabits(studyId, createHabitsDto);
+  }
+
+  @Patch(':studyId')
+  @ApiCustomDocs({
+    summary: '여러 습관 동시 수정',
+    description: {
+      title: '스터디의 여러 습관을 한번에 수정합니다.',
+      contents: ['중복된 이름의 습관으로 수정할 수 없습니다.'],
+    },
+    requestType: {
+      params: [
+        {
+          name: 'studyId',
+          description: '스터디 ID',
+          required: true,
+          type: 'string',
+          format: 'uuid',
+        },
+      ],
+      body: UpdateHabitsDto,
+    },
+    responseType: UpdateHabitsResponseDto,
+  })
+  async updateHabits(
+    @Param('studyId', ParseUUIDPipe) studyId: string,
+    @Body() updateHabitsDto: UpdateHabitsDto,
+  ): Promise<UpdateHabitsResponseDto> {
+    return await this.habitsService.updateHabits(studyId, updateHabitsDto);
   }
 }
