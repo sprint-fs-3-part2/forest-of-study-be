@@ -134,4 +134,30 @@ export class HabitsController {
   ): Promise<void> {
     await this.habitsService.deleteHabits(studyId, deleteHabitsDto);
   }
+
+  @Post(':habitId/complete')
+  @ApiCustomDocs({
+    summary: '습관 완료 처리',
+    description: {
+      title: '오늘의 습관을 완료 처리합니다.',
+      contents: ['오늘 완료한 습관은 다시 완료할 수 없습니다.'],
+    },
+    requestType: {
+      params: [
+        {
+          name: 'habitId',
+          description: '완료할 습관 ID',
+          required: true,
+          type: 'string',
+          format: 'uuid',
+        },
+      ],
+    },
+    responseType: CompletedHabitResponseDto,
+  })
+  async completeHabit(
+    @Param('habitId', ParseUUIDPipe) habitId: string,
+  ): Promise<CompletedHabitResponseDto> {
+    return await this.habitsService.completeHabit(habitId);
+  }
 }
