@@ -20,6 +20,14 @@ export class CreateHabitDto {
   @IsString()
   @MinLength(1)
   name: string;
+
+  @ApiProperty({
+    description: '습관이 생성된 날짜',
+    example: '',
+    type: Date,
+  })
+  @IsDate()
+  createdAt: Date;
 }
 
 export class CreateHabitsDto {
@@ -48,6 +56,7 @@ export class CreateHabitResponseDto extends CreateHabitDto {
     id: string;
     name: string;
     studyId: string;
+    createdAt: Date;
   }): CreateHabitResponseDto {
     const dto = new CreateHabitResponseDto();
     return Object.assign(dto, params);
@@ -68,6 +77,7 @@ export class CreateHabitsResponseDto {
           id: habit.id,
           name: habit.name,
           studyId: habit.studyId,
+          createdAt: habit.createdAt,
         }),
       ),
     };

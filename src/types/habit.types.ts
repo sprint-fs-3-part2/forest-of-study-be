@@ -2,6 +2,7 @@ export interface HabitData {
   id: string;
   name: string;
   studyId: string;
+  createdAt: Date;
 }
 
 export interface CompletedHabitData {

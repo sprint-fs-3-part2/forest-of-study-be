@@ -117,6 +117,9 @@ export class HabitsService {
 
       const habits = await this.prisma.habit.findMany({
         where: { studyId },
+        orderBy: {
+          createdAt: 'asc',
+        },
       });
 
       const completedHabits = await this.prisma.completedHabit.findMany({

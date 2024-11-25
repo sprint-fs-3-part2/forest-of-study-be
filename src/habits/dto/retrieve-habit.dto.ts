@@ -56,6 +56,13 @@ class HabitResponseDto {
   @IsString()
   completedToday: boolean;
 
+  @ApiProperty({
+    description: '습관이 생성된 날짜',
+    example: '2024-11-21T15:30:00Z',
+  })
+  @IsDate()
+  createdAt: Date;
+
   static of(params: {
     habit: HabitData;
     completedHabits: CompletedHabitData[];
