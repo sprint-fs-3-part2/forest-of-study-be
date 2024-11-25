@@ -11,7 +11,6 @@ import {
 } from './dto/create-habit.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
-  DeleteHabitsDto,
   UpdateHabitsDto,
   UpdateHabitsResponseDto,
 } from './dto/update-habit.dto';
@@ -147,28 +146,22 @@ export class HabitsService {
     }
   }
 
-  async deleteHabits(
-    studyId: string,
-    deleteHabitsDto: DeleteHabitsDto,
-  ): Promise<void> {
-    const existingHabits = await this.prisma.habit.findMany({
+  async deleteHabit(studyId: string, habitId: string): Promise<void> {
+    const existingHabits = await this.prisma.habit.findUnique({
       where: {
-        studyId,
-        name: { in: deleteHabitsDto.habits.map((habit) => habit.id) },
+        studyId: studyId,
+        id: habitId,
       },
     });
 
-    if (existingHabits.length !== deleteHabitsDto.habits.length)
-      throw new NotFoundException(
-        '일부 습관을 찾을 수 없거나 해당 스터디에 속하지 않습니다.',
-      );
+    if (!existingHabits)
+      throw new NotFoundException('습관을 찾을 수 없습니다.');
 
     try {
       await this.prisma.$transaction([
-        this.prisma.habit.deleteMany({
+        this.prisma.habit.delete({
           where: {
-            id: { in: deleteHabitsDto.habits.map((habit) => habit.id) },
-            studyId,
+            id: habitId,
           },
         }),
       ]);
@@ -217,17 +210,21 @@ export class HabitsService {
     return CompletedHabitResponseDto.of(completedHabit);
   }
 
-  async deleteCompletedHabit(id: string): Promise<void> {
-    const habit = await this.prisma.completedHabit.findUnique({
-      where: { id },
+  async deleteCompletedHabit(habitId: string, studyId: string): Promise<void> {
+    const habitToDelete = await this.prisma.completedHabit.findFirst({
+      where: {
+        studyId: studyId,
+        habitId: habitId,
+        completedAt: {
+          gte: new Date(new Date().setHours(0, 0, 0, 0)),
+          lt: new Date(new Date().setHours(23, 59, 59, 999)),
+        },
+      },
     });
-    if (!habit) throw new NotFoundException('습관을 찾을 수 없습니다.');
-
-    if (habit.completedAt.toDateString() !== new Date().toDateString())
-      throw new BadRequestException('오늘 습관만 삭제할 수 있습니다');
+    if (!habitToDelete) throw new NotFoundException('습관을 찾을 수 없습니다.');
 
     await this.prisma.completedHabit.delete({
-      where: { id },
+      where: { id: habitToDelete.id },
     });
   }
 

@@ -53,29 +53,9 @@ export class UpdateHabitsResponseDto {
           id: habit.id,
           name: habit.name,
           studyId: habit.studyId,
+          createdAt: habit.createdAt,
         }),
       ),
     };
   }
-}
-
-export class DeleteHabitDto {
-  @ApiProperty({
-    description: '삭제할 습관 ID',
-    format: 'uuid',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsUUID(4)
-  id: string;
-}
-
-export class DeleteHabitsDto {
-  @ApiProperty({
-    description: '삭제할 습관 ID 목록',
-    type: [DeleteHabitDto],
-  })
-  @ValidateNested({ each: true })
-  @Type(() => DeleteHabitDto)
-  @ArrayMinSize(1)
-  habits: DeleteHabitDto[];
 }

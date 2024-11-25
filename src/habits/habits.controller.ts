@@ -18,7 +18,6 @@ import {
   CreateHabitsResponseDto,
 } from './dto/create-habit.dto';
 import {
-  DeleteHabitsDto,
   UpdateHabitsDto,
   UpdateHabitsResponseDto,
 } from './dto/update-habit.dto';
@@ -110,33 +109,39 @@ export class HabitsController {
     return await this.habitsService.updateHabits(studyId, updateHabitsDto);
   }
 
-  @Delete(':studyId')
+  @Delete(':studyId/:habitId')
   @ApiCustomDocs({
-    summary: '여러 습관 동시 삭제',
+    summary: '습관 삭제',
     description: {
-      title: '스터디의 여러 습관을 한번에 삭제합니다.',
+      title: '스터디의 습관을 삭제합니다.',
     },
     requestType: {
       params: [
         {
           name: 'studyId',
-          description: '스터디 ID',
+          description: '습관이 속한 스터디 ID',
+          required: true,
+          type: 'string',
+          format: 'uuid',
+        },
+        {
+          name: 'habitId',
+          description: '삭제할 습관 ID',
           required: true,
           type: 'string',
           format: 'uuid',
         },
       ],
-      body: DeleteHabitsDto,
     },
   })
   async deleteHabits(
     @Param('studyId', ParseUUIDPipe) studyId: string,
-    @Body() deleteHabitsDto: DeleteHabitsDto,
+    @Param('habitId', ParseUUIDPipe) habitId: string,
   ): Promise<void> {
-    await this.habitsService.deleteHabits(studyId, deleteHabitsDto);
+    await this.habitsService.deleteHabit(studyId, habitId);
   }
 
-  @Post(':habitId/complete')
+  @Post(':studyId/:habitId/complete')
   @ApiCustomDocs({
     summary: '습관 완료 처리',
     description: {
@@ -157,12 +162,13 @@ export class HabitsController {
     responseType: CompletedHabitResponseDto,
   })
   async completeHabit(
+    @Param('studyId', ParseUUIDPipe) studyId: string,
     @Param('habitId', ParseUUIDPipe) habitId: string,
   ): Promise<CompletedHabitResponseDto> {
-    return await this.habitsService.completeHabit(habitId);
+    return await this.habitsService.completeHabit(studyId, habitId);
   }
 
-  @Delete(':habitId/complete')
+  @Delete(':studyId/:habitId/complete')
   @ApiCustomDocs({
     summary: '완료된 습관 삭제',
     description: {
@@ -172,8 +178,15 @@ export class HabitsController {
     requestType: {
       params: [
         {
+          name: 'studyId',
+          description: '삭제할 습관이 속한 스터디 ID',
+          required: true,
+          type: 'string',
+          format: 'uuid',
+        },
+        {
           name: 'habitId',
-          description: '완료할 습관 ID',
+          description: '삭제할 완료된 습관 ID',
           required: true,
           type: 'string',
           format: 'uuid',
@@ -182,8 +195,9 @@ export class HabitsController {
     },
   })
   async deleteCompletedHabit(
+    @Param('studyId', ParseUUIDPipe) studyId: string,
     @Param('habitId', ParseUUIDPipe) habitId: string,
   ): Promise<void> {
-    await this.habitsService.deleteCompletedHabit(habitId);
+    await this.habitsService.deleteCompletedHabit(habitId, studyId);
   }
 }
