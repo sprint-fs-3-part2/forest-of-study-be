@@ -11,28 +11,36 @@ export class CreateStudyDto {
     example: 'UX 스터디',
     type: String,
   })
+  @IsString()
   name: string;
+
   @ApiProperty({
     nullable: false,
     description: '스터디 개설자의 닉네임',
     example: 'K.K.',
     type: String,
   })
+  @IsString()
   nickname: string;
+
   @ApiProperty({
     nullable: false,
     description: '스터디 소개',
     example: '나비보벳따우',
     type: String,
   })
+  @IsString()
   intro: string;
+
   @ApiProperty({
     nullable: false,
     description: '스터디 배경 이미지',
     example: 'green',
     type: String,
   })
+  @IsString()
   background: string;
+
   @ApiProperty({
     nullable: false,
     description: '스터디 비밀번호',
@@ -62,6 +70,7 @@ export class CreateStudyResponseDto {
     example: crypto.randomUUID(),
     type: String,
   })
+  @IsString()
   id: string;
   // static of 메서드는 CreateStudyResponseDto 객체(Study ID)를 생성하여 반환함
   static of(id: string): CreateStudyResponseDto {

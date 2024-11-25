@@ -172,9 +172,12 @@ export class HabitsService {
     }
   }
 
-  async completeHabit(habitId: string): Promise<CompletedHabitResponseDto> {
+  async completeHabit(
+    studyId: string,
+    habitId: string,
+  ): Promise<CompletedHabitResponseDto> {
     const habit = await this.prisma.habit.findUnique({
-      where: { id: habitId },
+      where: { id: habitId, studyId: studyId },
     });
 
     if (!habit) {
@@ -187,6 +190,7 @@ export class HabitsService {
 
     const existingComplete = await this.prisma.completedHabit.findFirst({
       where: {
+        studyId: studyId,
         habitId,
         completedAt: {
           gte: startOfDay,

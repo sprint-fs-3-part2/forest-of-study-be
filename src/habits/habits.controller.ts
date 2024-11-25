@@ -38,7 +38,7 @@ export class HabitsController {
       params: [
         {
           name: 'studyId',
-          description: '스터디 ID',
+          description: '조회할 스터디 ID',
           required: true,
           type: 'string',
           format: 'uuid',
@@ -64,7 +64,7 @@ export class HabitsController {
       params: [
         {
           name: 'studyId',
-          description: '스터디 ID',
+          description: '습관이 속한 스터디 ID',
           required: true,
           type: 'string',
           format: 'uuid',
@@ -92,7 +92,7 @@ export class HabitsController {
       params: [
         {
           name: 'studyId',
-          description: '스터디 ID',
+          description: '습관이 속한 스터디 ID',
           required: true,
           type: 'string',
           format: 'uuid',
@@ -150,6 +150,13 @@ export class HabitsController {
     },
     requestType: {
       params: [
+        {
+          name: 'studyId',
+          description: '습관이 속한 스터디 ID',
+          required: true,
+          type: 'string',
+          format: 'uuid',
+        },
         {
           name: 'habitId',
           description: '완료할 습관 ID',
