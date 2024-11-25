@@ -136,7 +136,6 @@ export class HabitsService {
       });
 
       return StudyHabitsResponseDto.of({
-        studyId,
         habits,
         completedHabits,
       });

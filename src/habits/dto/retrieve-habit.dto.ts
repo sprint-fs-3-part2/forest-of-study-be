@@ -22,7 +22,7 @@ class CompletedHabitDto {
     example: '2024-11-21T15:30:00Z',
   })
   @IsDate()
-  completedDate: Date;
+  completedAt: Date;
 }
 
 class HabitResponseDto {
@@ -79,21 +79,14 @@ class HabitResponseDto {
         id: el.id,
         studyId: el.studyId,
         habitId: el.habitId,
-        completedDate: el.completedAt,
+        completedAt: el.completedAt,
       })),
+      createdAt: habit.createdAt,
     };
   }
 }
 
 export class StudyHabitsResponseDto {
-  @ApiProperty({
-    description: '스터디 ID',
-    format: 'uuid',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
-  @IsUUID(4)
-  studyId: string;
-
   @ApiProperty({
     description: '스터디의 모든 습관 목록',
     type: [HabitResponseDto],
@@ -101,14 +94,12 @@ export class StudyHabitsResponseDto {
   habits: HabitResponseDto[];
 
   static of(params: {
-    studyId: string;
     habits: HabitData[];
     completedHabits: CompletedHabitData[];
   }): StudyHabitsResponseDto {
-    const { studyId, habits, completedHabits } = params;
+    const { habits, completedHabits } = params;
 
     return {
-      studyId,
       habits: habits.map((habit) =>
         HabitResponseDto.of({
           habit,
