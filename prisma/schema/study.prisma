@@ -1,15 +1,20 @@
 /// 스터디 모델
 model Study {
-  id        String  @id @default(uuid())
-  name      String @db.VarChar(100) /// 스터디의 이름
-  nickname  String @db.VarChar(100) /// 스터디 개설자의 닉네임
-  intro     String  @db.Text /// 스터디 소개
-  background String /// 배경 이미지 설정
-  password  String  @db.VarChar(255) /// 해시된 스터디 비밀번호
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  habits    Habit[]   /// 스터디에 연관된 오늘의 습관들
-  focuses     Focus[]      /// 스터디에 연관된 오늘의 집중들
-  completedHabits CompletedHabit[] /// 스터디에 연관된 완료된 습관들
-  reactions       Reaction[]       /// 스터디에 연관된 리액션들
+  id              String           @id @default(uuid())
+  /// 스터디의 이름
+  name            String           @db.VarChar(100)
+  /// 스터디 개설자의 닉네임
+  nickname        String           @db.VarChar(100)
+  /// 스터디 소개
+  intro           String
+  /// 배경 이미지 설정
+  background      String
+  /// 해시된 스터디 비밀번호
+  password        String           @db.VarChar(255)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(6)
+  completedHabits CompletedHabit[]
+  focuses         Focus[]
+  habits          Habit[]
+  reactions       Reaction[]
 }

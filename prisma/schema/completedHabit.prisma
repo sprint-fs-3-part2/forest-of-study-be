@@ -4,12 +4,12 @@
 /// @relationship Study - 해당 습관이 속한 스터디
 /// @relationship Habit - 완료된 습관
 model CompletedHabit {
-  id        String  @id @default(uuid())
-  studyId   String
-  habitId   String
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  study     Study     @relation(fields: [studyId], references: [id], onDelete: Cascade)
-  habit     Habit     @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  studyId     String
+  habitId     String
+  completedAt DateTime @default(now()) @db.Timestamptz(6)
+  habit       Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  study       Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
+
   @@index([studyId, habitId])
 }

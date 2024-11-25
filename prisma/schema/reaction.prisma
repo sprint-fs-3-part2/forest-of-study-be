@@ -2,13 +2,17 @@
 /// @description 스터디에 대한 이모지 리액션을 관리하는 모델입니다.
 /// @uniqueConstraint studyId와 emoji의 조합은 유일해야 합니다.
 model Reaction {
-  id        String  @id @default(uuid())
-  studyId   String  /// 스터디 식별을 위한 외래키
-  emoji     String @db.Text /// 리액션 이모지 (예: "👍", "❤️", "🎉")
-  count     Int    @default(0) /// 해당 이모지에 대한 리액션 횟수
+  id        String   @id @default(uuid())
+  /// 스터디 식별을 위한 외래키
+  studyId   String
+  /// 리액션 이모지 (예: "👍", "❤️", "🎉")
+  emoji     String
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  study     Study     @relation(fields: [studyId], references: [id], onDelete: Cascade) /// 리액션이 속한 스터디
-  @@index ([studyId])
-  @@unique([studyId, emoji]) /// 동일한 스터디에 같은 이모지는 한 번만 등록 가능
+  /// 해당 이모지에 대한 리액션 횟수
+  count     Int      @default(0)
+  study     Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
+
+  @@unique([studyId, emoji])
+  @@index([studyId])
 }
