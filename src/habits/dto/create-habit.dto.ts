@@ -27,6 +27,7 @@ export class CreateHabitDto {
     type: Date,
   })
   @IsDate()
+  @Type(() => Date)
   createdAt: Date;
 }
 
@@ -105,6 +106,7 @@ export class CompletedHabitResponseDto {
     format: 'date',
   })
   @IsDate()
+  @Type(() => Date)
   completedAt: Date;
   static of(completedHabit: CompletedHabitData): CompletedHabitResponseDto {
     return {

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsDate, IsString, IsUUID } from 'class-validator';
 import { CompletedHabitData, HabitData } from 'src/types/habit.types';
 
 class CompletedHabitDto {
@@ -22,6 +23,7 @@ class CompletedHabitDto {
     example: '2024-11-21T15:30:00Z',
   })
   @IsDate()
+  @Type(() => Date)
   completedAt: Date;
 }
 
@@ -53,7 +55,7 @@ class HabitResponseDto {
     example: true,
     format: 'boolean',
   })
-  @IsString()
+  @IsBoolean()
   completedToday: boolean;
 
   @ApiProperty({
@@ -61,6 +63,7 @@ class HabitResponseDto {
     example: '2024-11-21T15:30:00Z',
   })
   @IsDate()
+  @Type(() => Date)
   createdAt: Date;
 
   static of(params: {
@@ -72,9 +75,15 @@ class HabitResponseDto {
     return {
       id: habit.id,
       name: habit.name,
-      completedToday: completedHabits.some(
-        (el) => el.completedAt.toDateString() === new Date().toDateString(),
-      ),
+      completedToday: completedHabits.some((el) => {
+        const today = new Date();
+        const completedDate = new Date(el.completedAt);
+        return (
+          completedDate.getFullYear() === today.getFullYear() &&
+          completedDate.getMonth() === today.getMonth() &&
+          completedDate.getDate() === today.getDate()
+        );
+      }),
       completedHabitsThisWeek: completedHabits.map((el) => ({
         id: el.id,
         studyId: el.studyId,

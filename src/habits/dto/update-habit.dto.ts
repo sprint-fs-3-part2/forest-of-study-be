@@ -2,12 +2,14 @@ import { CreateHabitResponseDto } from './create-habit.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMinSize,
+  IsArray,
   IsString,
   IsUUID,
   MinLength,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Habit } from '@prisma/client';
 
 export class UpdateHabitDto {
   @ApiProperty({
@@ -35,6 +37,7 @@ export class UpdateHabitsDto {
   })
   @ValidateNested({ each: true })
   @Type(() => UpdateHabitDto)
+  @IsArray()
   @ArrayMinSize(1)
   habits: UpdateHabitDto[];
 }
@@ -46,7 +49,7 @@ export class UpdateHabitsResponseDto {
   })
   habits: CreateHabitResponseDto[];
 
-  static of(habits: any[]): UpdateHabitsResponseDto {
+  static of(habits: Habit[]): UpdateHabitsResponseDto {
     return {
       habits: habits.map((habit) =>
         CreateHabitResponseDto.of({

@@ -33,16 +33,16 @@ export class HabitsService {
       throw new NotFoundException('스터디를 찾을 수 없습니다.');
     }
 
-    const existingHabits = await this.prisma.habit.findMany({
+    const existingHabit = await this.prisma.habit.findMany({
       where: {
         studyId,
         name: { in: createHabitsDto.habits.map((habit) => habit.name) },
       },
     });
 
-    if (existingHabits.length > 0) {
+    if (existingHabit.length > 0) {
       throw new ConflictException(
-        `이미 존재하는 습관이 있습니다: ${existingHabits.map((habit) => habit.name).join(', ')}`,
+        `이미 존재하는 습관이 있습니다: ${existingHabit.map((habit) => habit.name).join(', ')}`,
       );
     }
 
@@ -147,7 +147,7 @@ export class HabitsService {
   }
 
   async deleteHabit(studyId: string, habitId: string): Promise<void> {
-    const existingHabits = await this.prisma.habit.findUnique({
+    const existingHabits = await this.prisma.habit.findFirst({
       where: {
         studyId: studyId,
         id: habitId,
@@ -165,10 +165,8 @@ export class HabitsService {
           },
         }),
       ]);
-    } catch (error) {
-      throw new BadRequestException(
-        `${error.message} 습관 삭제에 실패했습니다.`,
-      );
+    } catch {
+      throw new BadRequestException('습관 삭제에 실패했습니다.');
     }
   }
 
@@ -176,7 +174,7 @@ export class HabitsService {
     studyId: string,
     habitId: string,
   ): Promise<CompletedHabitResponseDto> {
-    const habit = await this.prisma.habit.findUnique({
+    const habit = await this.prisma.habit.findFirst({
       where: { id: habitId, studyId: studyId },
     });
 
