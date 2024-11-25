@@ -3,6 +3,8 @@ model Habit {
   studyId         String
   /// 습관의 이름(물 마시기, 책 읽기 등)
   name            String           @db.VarChar(100)
+  createdAt       DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime         @updatedAt @db.Timestamptz(6)
   completedHabits CompletedHabit[]
   study           Study            @relation(fields: [studyId], references: [id], onDelete: Cascade)
 
