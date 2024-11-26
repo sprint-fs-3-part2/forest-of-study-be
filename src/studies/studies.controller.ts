@@ -21,7 +21,6 @@ import {
   SearchKeywordResponseDto,
 } from './dto/retrieve-study.dto';
 import { VerifyStudyPasswordRequestDto } from './dto/verify-study.dto';
-// import { VerifyStudyPasswordRequestDto } from './dto/verify-study.dto';
 
 @ApiTags('studies')
 @Controller('studies')

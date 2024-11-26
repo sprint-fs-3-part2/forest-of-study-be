@@ -46,7 +46,13 @@ export class StudiesService {
 
   async createStudy(createStudyDto: CreateStudyDto) {
     // 비밀번호 해싱(Salt는 argon2 기본값 사용)
-    const hashedPassword = await argon2.hash(createStudyDto.password);
+    let hashedPassword;
+    try {
+      hashedPassword = await argon2.hash(createStudyDto.password);
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('비밀번호 해싱 중 오류가 발생했습니다');
+    }
     // 스터디 생성
     const study = await this.prisma.study.create({
       data: {
