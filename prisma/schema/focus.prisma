@@ -2,13 +2,11 @@
 /// - 사용자의 학습 집중 시간을 기록하고 포인트를 관리
 /// - startTime과 endTime으로 집중 시간을 측정
 /// - points 필드로 집중도에 따른 보상 포인트를 누적
-/// - Study 모델과 1:N 관계로 연결되어 특정 학습에 대한 집중 기록을 저장
+/// - Study 모델과 1:1 관계로 연결되어 특정 학습에 대한 집중 기록을 저장
 model Focus {
   id        String    @id @default(uuid())
-  studyId   String
+  studyId   String    @unique
   points    Int       @default(0)
-  startTime DateTime?
-  endTime   DateTime?
   study     Study     @relation(fields: [studyId], references: [id], onDelete: Cascade)
 
   @@index([studyId])

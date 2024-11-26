@@ -14,7 +14,7 @@ model Study {
   createdAt       DateTime         @default(now()) @db.Timestamptz(6)
   updatedAt       DateTime         @updatedAt @db.Timestamptz(6)
   completedHabits CompletedHabit[]
-  focuses         Focus[]
+  focus           Focus?
   habits          Habit[]
   reactions       Reaction[]
 }
