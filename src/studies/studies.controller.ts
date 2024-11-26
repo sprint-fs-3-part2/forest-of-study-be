@@ -20,6 +20,8 @@ import {
   SearchKeywordDto,
   SearchKeywordResponseDto,
 } from './dto/retrieve-study.dto';
+import { VerifyStudyPasswordRequestDto } from './dto/verify-study.dto';
+// import { VerifyStudyPasswordRequestDto } from './dto/verify-study.dto';
 
 @ApiTags('studies')
 @Controller('studies')
@@ -125,5 +127,25 @@ export class StudiesController {
   @Delete(':id')
   deleteStudy(@Param('id') id: string) {
     return this.studiesService.deleteStudy(id);
+  }
+
+  @ApiCustomDocs({
+    summary: '스터디 비밀번호 검증',
+    description: {
+      title: '스터디 비밀번호를 검증합니다.',
+      contents: ['특정 스터디의 비밀번호를 검증합니다.'],
+    },
+    requestType: VerifyStudyPasswordRequestDto,
+    responseType: Boolean,
+  })
+  @Post(':id/verify')
+  verifyStudyPassword(
+    @Param('id') id: string,
+    @Body() verifyStudyPasswordDto: VerifyStudyPasswordRequestDto,
+  ) {
+    return this.studiesService.verifyStudyPassword(
+      id,
+      verifyStudyPasswordDto.password,
+    );
   }
 }
