@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePointDto } from './dto/create-point.dto';
-import { UpdatePointDto } from './dto/update-point.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PointsService {
-  create(createPointDto: CreatePointDto) {
-    return 'This action adds a new point';
-  }
+  // PrismaService를 주입
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all points`;
-  }
+  async updatePoint(createPointDto: CreatePointDto) {
+    const { studyId, points } = createPointDto;
 
-  findOne(id: number) {
-    return `This action returns a #${id} point`;
-  }
+    // studyId로 기존 레코드를 조회
+    const existingFocus = await this.prisma.focus.findUnique({
+      where: { studyId },
+    });
 
-  update(id: number, updatePointDto: UpdatePointDto) {
-    return `This action updates a #${id} point`;
-  }
+    // 기존 레코드가 있으면 포인트를 더해줌
+    if (existingFocus) {
+      const point = await this.prisma.focus.update({
+        where: { studyId },
+        data: { points: existingFocus.points + points },
+      });
 
-  remove(id: number) {
-    return `This action removes a #${id} point`;
+      return point;
+    }
   }
 }
