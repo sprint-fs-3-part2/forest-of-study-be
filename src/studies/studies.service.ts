@@ -37,11 +37,22 @@ export class StudiesService {
           in: uuids,
         },
       },
+      include: {
+        focus: {
+          select: {
+            points: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: 'desc',
       },
     });
-    return studies;
+
+    return studies.map(({ focus, ...study }) => ({
+      ...study,
+      points: focus?.points ?? 0,
+    }));
   }
 
   async createStudy(createStudyDto: CreateStudyDto) {
