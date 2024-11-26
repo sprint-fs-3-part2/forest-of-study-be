@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber } from 'class-validator';
 
 export class CreatePointDto {
   @ApiProperty({
@@ -7,6 +8,7 @@ export class CreatePointDto {
     example: 5,
     type: Number,
   })
+  @IsNumber()
   points: number = 0;
 
   @ApiProperty({

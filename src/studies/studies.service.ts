@@ -88,10 +88,9 @@ export class StudiesService {
       orderBy: { [orderBy || 'createdAt']: order || 'desc' },
     });
 
-    return studies.map((study) => ({
+    return studies.map(({ focus, ...study }) => ({
       ...study,
-      points: study.focus?.points,
-      focus: undefined,
+      points: focus?.points ?? 0,
     }));
   }
 
@@ -153,10 +152,11 @@ export class StudiesService {
       },
     });
 
+    const { focus, ...studyWithoutFocus } = study;
+
     return {
-      ...study,
-      points: study.focus?.points,
-      focus: undefined,
+      ...studyWithoutFocus,
+      points: focus?.points ?? 0,
     };
   }
 

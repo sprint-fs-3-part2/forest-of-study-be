@@ -12,7 +12,7 @@ export class PointsController {
   @ApiCustomDocs({
     summary: '포인트 업데이트',
     description: {
-      title: '포인트를 업데이트를 합니다.',
+      title: '포인트를 업데이트합니다.',
       contents: ['포인트 점수를 입력받아 포인트를 추가해서 업데이트를 합니다.'],
     },
     requestType: CreatePointDto,
