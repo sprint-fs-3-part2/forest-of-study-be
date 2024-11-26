@@ -46,7 +46,14 @@ export class StudiesService {
   async createStudy(createStudyDto: CreateStudyDto) {
     // 스터디 생성 시, 스터디 정보를 생성하고, 생성한 스터디의 ID를 반환
     const study = await this.prisma.study.create({
-      data: createStudyDto,
+      data: {
+        ...createStudyDto,
+        focus: {
+          create: {
+            points: 0,
+          },
+        },
+      },
     });
     return CreateStudyResponseDto.of(study.id);
   }
@@ -61,7 +68,8 @@ export class StudiesService {
       orderBy = 'createdAt',
       order = 'desc',
     } = queryParamsDto;
-    return this.prisma.study.findMany({
+
+    const studies = await this.prisma.study.findMany({
       select: {
         id: true,
         name: true,
@@ -69,11 +77,21 @@ export class StudiesService {
         intro: true,
         background: true,
         createdAt: true, // 0일째 진행중 표기를 위해 createdAt 필드 추가
+        focus: {
+          select: {
+            points: true,
+          },
+        },
       },
       skip: Number((page - 1) * take) || 0,
       take: Number(take) || 6,
       orderBy: { [orderBy || 'createdAt']: order || 'desc' },
     });
+
+    return studies.map(({ focus, ...study }) => ({
+      ...study,
+      points: focus?.points ?? 0,
+    }));
   }
 
   async searchStudies(@Query() searchKeywordDto: SearchKeywordDto) {
@@ -119,12 +137,27 @@ export class StudiesService {
 
   async getStudyById(id: string) {
     // return `This action returns a #${id} study`;
-    return this.prisma.study.findUnique({
+
+    const study = await this.prisma.study.findUnique({
       omit: this.SENSITIVE_FIELDS,
       where: {
         id,
       },
+      include: {
+        focus: {
+          select: {
+            points: true,
+          },
+        },
+      },
     });
+
+    const { focus, ...studyWithoutFocus } = study;
+
+    return {
+      ...studyWithoutFocus,
+      points: focus?.points ?? 0,
+    };
   }
 
   async updateStudy(id: string, updateStudyDto: UpdateStudyDto) {
