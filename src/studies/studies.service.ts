@@ -7,6 +7,7 @@ import {
   SearchKeywordDto,
   RecentStudiesRequestDto,
 } from './dto/retrieve-study.dto';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class StudiesService {
@@ -30,7 +31,7 @@ export class StudiesService {
     }
     // 최근 조회한 Study ID 배열을 이용하여 최근 조회한 스터디 목록을 가져옴
     const studies = await this.prisma.study.findMany({
-      omit: this.SENSITIVE_FIELDS,
+      // omit: this.SENSITIVE_FIELDS,
       where: {
         id: {
           in: uuids,
@@ -44,10 +45,19 @@ export class StudiesService {
   }
 
   async createStudy(createStudyDto: CreateStudyDto) {
-    // 스터디 생성 시, 스터디 정보를 생성하고, 생성한 스터디의 ID를 반환
+    // 비밀번호 해싱(Salt는 argon2 기본값 사용)
+    let hashedPassword;
+    try {
+      hashedPassword = await argon2.hash(createStudyDto.password);
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('비밀번호 해싱 중 오류가 발생했습니다');
+    }
+    // 스터디 생성
     const study = await this.prisma.study.create({
       data: {
         ...createStudyDto,
+        password: hashedPassword, // 해싱된 비밀번호 저장
         focus: {
           create: {
             points: 0,
@@ -56,6 +66,20 @@ export class StudiesService {
       },
     });
     return CreateStudyResponseDto.of(study.id);
+  }
+
+  // 비밀번호 검증이 필요한 경우 사용할 메서드 추가
+  async verifyStudyPassword(
+    studyId: string,
+    plainPassword: string,
+  ): Promise<boolean> {
+    const study = await this.prisma.study.findUnique({
+      where: { id: studyId },
+      select: { password: true },
+    });
+
+    if (!study) return false;
+    return await argon2.verify(study.password, plainPassword);
   }
 
   async getStudies(@Query() queryParamsDto: QueryParamsDto) {
@@ -105,7 +129,7 @@ export class StudiesService {
       order = 'desc',
     } = searchKeywordDto;
     const studies = await this.prisma.study.findMany({
-      omit: this.SENSITIVE_FIELDS,
+      // omit: this.SENSITIVE_FIELDS,
       skip: Number((page - 1) * take) || 0,
       take: Number(take) || 6,
       orderBy: { [orderBy || 'createdAt']: order || 'desc' },
@@ -139,7 +163,7 @@ export class StudiesService {
     // return `This action returns a #${id} study`;
 
     const study = await this.prisma.study.findUnique({
-      omit: this.SENSITIVE_FIELDS,
+      // omit: this.SENSITIVE_FIELDS,
       where: {
         id,
       },

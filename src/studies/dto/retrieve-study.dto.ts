@@ -1,9 +1,4 @@
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  OmitType,
-  PickType,
-} from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { CreateStudyDto } from './create-study.dto';
 import {
   ArrayMaxSize,
@@ -150,9 +145,10 @@ export class SearchKeywordDto extends PickType(QueryParamsDto, [
 /**
  * 스터디 응답 DTO로서, `CreateStudyDto`에서 `password` 필드를 제외한 클래스입니다.
  */
-export class StudyResponseDto extends OmitType(CreateStudyDto, [
-  'password',
-] as const) {}
+// export class StudyResponseDto extends OmitType(CreateStudyDto, [
+//   'password',
+// ] as const) {}
+export class StudyResponseDto extends CreateStudyDto {}
 
 /**
  * 스터디 검색 결과를 반환하기 위한 DTO
