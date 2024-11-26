@@ -68,7 +68,8 @@ export class StudiesService {
       orderBy = 'createdAt',
       order = 'desc',
     } = queryParamsDto;
-    return this.prisma.study.findMany({
+
+    const studies = await this.prisma.study.findMany({
       select: {
         id: true,
         name: true,
@@ -76,11 +77,22 @@ export class StudiesService {
         intro: true,
         background: true,
         createdAt: true, // 0일째 진행중 표기를 위해 createdAt 필드 추가
+        focus: {
+          select: {
+            points: true,
+          },
+        },
       },
       skip: Number((page - 1) * take) || 0,
       take: Number(take) || 6,
       orderBy: { [orderBy || 'createdAt']: order || 'desc' },
     });
+
+    return studies.map((study) => ({
+      ...study,
+      points: study.focus?.points,
+      focus: undefined,
+    }));
   }
 
   async searchStudies(@Query() searchKeywordDto: SearchKeywordDto) {
