@@ -46,7 +46,14 @@ export class StudiesService {
   async createStudy(createStudyDto: CreateStudyDto) {
     // 스터디 생성 시, 스터디 정보를 생성하고, 생성한 스터디의 ID를 반환
     const study = await this.prisma.study.create({
-      data: createStudyDto,
+      data: {
+        ...createStudyDto,
+        focus: {
+          create: {
+            points: 0,
+          },
+        },
+      },
     });
     return CreateStudyResponseDto.of(study.id);
   }
