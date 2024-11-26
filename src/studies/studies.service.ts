@@ -138,12 +138,26 @@ export class StudiesService {
 
   async getStudyById(id: string) {
     // return `This action returns a #${id} study`;
-    return this.prisma.study.findUnique({
+
+    const study = await this.prisma.study.findUnique({
       omit: this.SENSITIVE_FIELDS,
       where: {
         id,
       },
+      include: {
+        focus: {
+          select: {
+            points: true,
+          },
+        },
+      },
     });
+
+    return {
+      ...study,
+      points: study.focus?.points,
+      focus: undefined,
+    };
   }
 
   async updateStudy(id: string, updateStudyDto: UpdateStudyDto) {
